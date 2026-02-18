@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bầu Cua Betting Advisor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f1a">
+<title>Bầu Cua Advisor</title>
 <style>
   :root {
     --bg: #0f0f1a;
-    --card: #1a1a2e;
+    --card: #181830;
     --card2: #22223a;
     --accent: #f7c948;
     --accent2: #ff6b6b;
@@ -15,371 +18,453 @@
     --cyan: #22b8cf;
     --text: #f1f3f5;
     --dim: #868e96;
-    --r: 16px;
+    --r: 18px;
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --nav-h: 62px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body {
+  html, body {
+    height: 100%;
+    overflow: hidden;
     font-family: -apple-system, system-ui, 'Segoe UI', sans-serif;
-    background: var(--bg); color: var(--text);
-    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
     -webkit-tap-highlight-color: transparent;
-  }
-  .app { max-width: 500px; margin: 0 auto; padding: 12px 14px 80px; }
-
-  /* ---- HEADER ---- */
-  .hdr { text-align: center; padding: 18px 0 8px; }
-  .hdr h1 {
-    font-size: 1.6rem;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hdr p { color: var(--dim); font-size: .85rem; margin-top: 2px; }
-
-  .card {
-    background: var(--card); border-radius: var(--r);
-    padding: 18px; margin-bottom: 14px;
-    border: 1px solid rgba(255,255,255,.04);
-  }
-  .card-title {
-    font-size: 1rem; font-weight: 700; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .card-title .icon { font-size: 1.2rem; }
-
-  /* ---- STEP INDICATOR ---- */
-  .steps {
-    display: flex; align-items: center; justify-content: center;
-    gap: 6px; margin-bottom: 16px;
-  }
-  .step-dot {
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; font-weight: 700;
-    background: var(--card2); color: var(--dim);
-    border: 2px solid transparent;
-    transition: all .25s;
-  }
-  .step-dot.active { border-color: var(--accent); color: var(--accent); background: rgba(247,201,72,.1); }
-  .step-dot.done { background: rgba(81,207,102,.15); border-color: var(--green); }
-  .step-line { width: 30px; height: 2px; background: var(--card2); }
-
-  .step-label {
-    text-align: center; font-size: .85rem; color: var(--cyan);
-    margin-bottom: 14px; min-height: 22px; font-weight: 600;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 
-  /* ---- DIE SLOTS (shows what you've picked) ---- */
-  .die-slots {
-    display: flex; gap: 10px; justify-content: center; margin-bottom: 16px;
-  }
-  .die-slot {
-    width: 72px; height: 72px; border-radius: 14px;
-    background: var(--card2); border: 2px dashed rgba(255,255,255,.12);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.2rem; transition: all .25s; cursor: pointer;
+  /* ==================== APP SHELL ==================== */
+  .app {
+    display: flex; flex-direction: column;
+    height: 100%; height: 100dvh;
+    max-width: 480px; margin: 0 auto;
     position: relative;
   }
-  .die-slot.filled { border-style: solid; border-color: var(--accent); background: rgba(247,201,72,.08); }
-  .die-slot.current { border-color: var(--cyan); border-style: solid; animation: pulse 1.2s infinite; }
-  .die-slot .placeholder { color: var(--dim); font-size: .75rem; font-weight: 600; }
-  .die-slot .clear-x {
-    position: absolute; top: -6px; right: -6px;
-    width: 20px; height: 20px; border-radius: 50%;
-    background: var(--accent2); color: #fff;
-    font-size: .7rem; font-weight: 700;
+
+  /* -- Sticky top recommendation bar -- */
+  .top-bar {
+    flex-shrink: 0;
+    background: var(--card);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    padding: 10px 16px;
+    padding-top: calc(env(safe-area-inset-top, 8px) + 4px);
+    min-height: 54px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    z-index: 10;
+  }
+  .top-rec {
+    font-size: .82rem; font-weight: 700; color: var(--dim);
+    width: 100%;
+  }
+  .top-rec .picks {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-top: 4px;
+  }
+  .top-rec .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(81,207,102,.1); border: 1.5px solid var(--green);
+    border-radius: 50px; padding: 4px 14px 4px 8px;
+    font-size: .85rem; font-weight: 700; color: var(--green);
+  }
+  .top-rec .chip .e { font-size: 1.2rem; }
+  .top-rec .chip.s { border-color: var(--cyan); color: var(--cyan); background: rgba(34,184,207,.1); }
+  .top-rec .sub { font-size: .68rem; color: var(--dim); font-weight: 500; margin-top: 3px; }
+
+  /* -- Scrollable page area -- */
+  .page-area {
+    flex: 1; overflow: hidden; position: relative;
+  }
+  .page {
+    position: absolute; inset: 0;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 14px 14px calc(var(--nav-h) + var(--safe-b) + 14px);
+    display: none;
+  }
+  .page.active { display: block; }
+
+  /* -- Bottom nav -- */
+  .bottom-nav {
+    flex-shrink: 0;
+    display: flex;
+    background: var(--card);
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding-bottom: var(--safe-b);
+    position: relative; z-index: 10;
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 8px 0 6px; gap: 2px;
+    background: none; border: none; cursor: pointer;
+    color: var(--dim); transition: color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn .ico { font-size: 1.4rem; line-height: 1; }
+  .nav-btn .txt { font-size: .65rem; font-weight: 600; }
+  .nav-btn.active .ico, .nav-btn.active .txt { color: var(--accent); }
+
+  /* ==================== SHARED ==================== */
+  .card {
+    background: var(--card); border-radius: var(--r);
+    padding: 16px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,.04);
+  }
+  .section-title {
+    font-size: .9rem; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .section-title .ico { font-size: 1.1rem; }
+
+  .empty {
+    text-align: center; padding: 24px 12px; color: var(--dim);
+    font-size: .88rem; line-height: 1.5;
+  }
+
+  /* ==================== PAGE 1: LOG ==================== */
+
+  /* -- Die slots -- */
+  .die-row {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 14px;
+  }
+  .die-box {
+    width: 30%; max-width: 100px; aspect-ratio: 1;
+    border-radius: 16px; background: var(--card2);
+    border: 2.5px dashed rgba(255,255,255,.1);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 2.6rem; position: relative;
+    transition: all .2s; cursor: pointer;
+  }
+  .die-box .die-label {
+    font-size: .6rem; font-weight: 700; color: var(--dim);
+    text-transform: uppercase; letter-spacing: .5px;
+    position: absolute; bottom: 6px;
+  }
+  .die-box.filled {
+    border-style: solid; border-color: var(--accent);
+    background: rgba(247,201,72,.06);
+  }
+  .die-box.filled .die-label { display: none; }
+  .die-box.current {
+    border-color: var(--cyan); border-style: solid;
+    animation: glow 1.4s infinite;
+  }
+  .die-box .x-btn {
+    position: absolute; top: -7px; right: -7px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent2); color: #fff; border: 2px solid var(--bg);
+    font-size: .65rem; font-weight: 800;
     display: none; align-items: center; justify-content: center;
-    cursor: pointer; border: none; line-height: 1;
+    cursor: pointer;
   }
-  .die-slot.filled .clear-x { display: flex; }
+  .die-box.filled .x-btn { display: flex; }
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(34,184,207,.25); }
+    50% { box-shadow: 0 0 0 10px rgba(34,184,207,0); }
+  }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(34,184,207,.3); }
-    50% { box-shadow: 0 0 0 8px rgba(34,184,207,0); }
+  .step-msg {
+    text-align: center; font-size: .88rem; font-weight: 700;
+    margin-bottom: 14px; min-height: 24px;
+    color: var(--cyan);
   }
+  .step-msg.done { color: var(--green); }
 
-  /* ---- SYMBOL PICKER GRID ---- */
-  .picker-label {
-    text-align: center; font-size: .8rem; color: var(--dim);
-    margin-bottom: 8px;
-  }
-  .picker {
+  /* -- Big symbol picker -- */
+  .picker-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 10px; margin-bottom: 14px;
   }
-  .pick-btn {
-    background: var(--card2); border: 2px solid transparent;
-    border-radius: 14px; padding: 16px 6px; cursor: pointer;
-    text-align: center; transition: all .15s; user-select: none;
-    -webkit-user-select: none;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  .sym-btn {
+    background: var(--card2); border: 2.5px solid transparent;
+    border-radius: 16px; padding: 14px 4px 12px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 2px;
+    cursor: pointer; transition: all .12s;
+    -webkit-user-select: none; user-select: none;
+    min-height: 88px; justify-content: center;
   }
-  .pick-btn:active { transform: scale(.93); }
-  .pick-btn:hover { border-color: rgba(247,201,72,.3); }
-  .pick-btn .emoji { font-size: 2.4rem; line-height: 1; }
-  .pick-btn .label { font-size: .82rem; font-weight: 700; color: var(--text); }
-  .pick-btn .sublabel { font-size: .7rem; color: var(--dim); }
+  .sym-btn:active { transform: scale(.91); background: rgba(247,201,72,.12); }
+  .sym-btn .e { font-size: 2.4rem; line-height: 1.1; }
+  .sym-btn .n { font-size: .78rem; font-weight: 700; }
+  .sym-btn .v { font-size: .65rem; color: var(--dim); }
 
-  /* ---- BUTTONS ---- */
-  .btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 4px; flex-wrap: wrap; }
-  .btn {
-    padding: 12px 28px; border: none; border-radius: 50px;
-    font-size: .95rem; font-weight: 700; cursor: pointer;
-    transition: all .2s; display: inline-flex; align-items: center; gap: 6px;
+  /* -- Log button -- */
+  .log-btn {
+    width: 100%; padding: 18px; border: none; border-radius: 16px;
+    font-size: 1.1rem; font-weight: 800; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), #e6a700);
+    color: #1a0a2e; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .btn:active { transform: scale(.96); }
-  .btn-big {
-    width: 100%; justify-content: center; padding: 16px; font-size: 1.1rem;
-    border-radius: 14px;
-  }
-  .btn-gold { background: linear-gradient(135deg, var(--accent), #e6a700); color: #1a0a2e; }
-  .btn-gold:disabled { opacity: .35; cursor: default; transform: none; }
-  .btn-outline {
-    background: transparent; border: 1.5px solid rgba(255,255,255,.12);
-    color: var(--dim); padding: 10px 20px; font-size: .85rem; font-weight: 600;
-    border-radius: 50px; cursor: pointer; transition: all .2s;
-  }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-sm { padding: 7px 16px; font-size: .8rem; }
-  .btn-red { background: var(--accent2); color: #fff; border: none; }
+  .log-btn:disabled { opacity: .3; cursor: default; }
+  .log-btn:active:not(:disabled) { transform: scale(.97); }
 
-  /* ---- SUCCESS FLASH ---- */
-  .flash {
-    text-align: center; padding: 12px; border-radius: 12px;
-    font-weight: 700; font-size: .95rem; margin-bottom: 12px;
-    display: none; animation: fadeIn .3s;
+  .clear-link {
+    text-align: center; margin-top: 10px;
   }
-  .flash.show { display: block; }
-  .flash.ok { background: rgba(81,207,102,.12); color: var(--green); }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); }}
+  .clear-link button {
+    background: none; border: none; color: var(--dim);
+    font-size: .78rem; cursor: pointer; padding: 6px 12px;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
 
-  /* ---- RECOMMENDATION BOX ---- */
-  .rec-box {
-    background: linear-gradient(135deg, rgba(81,207,102,.08), rgba(34,184,207,.08));
-    border: 2px solid rgba(81,207,102,.2);
-    border-radius: var(--r); padding: 18px; margin-bottom: 14px;
-    text-align: center;
+  /* -- Flash toast -- */
+  .toast {
+    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #0f0f1a; padding: 10px 24px;
+    border-radius: 50px; font-size: .88rem; font-weight: 700;
+    z-index: 100; opacity: 0; pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    white-space: nowrap; box-shadow: 0 6px 24px rgba(0,0,0,.4);
   }
-  .rec-box .rec-title {
-    font-size: 1rem; font-weight: 700; color: var(--green); margin-bottom: 12px;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .rec-picks { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
-  .rec-card {
-    background: var(--card); border: 2px solid var(--green); border-radius: 14px;
-    padding: 12px 18px; text-align: center; min-width: 90px;
-  }
-  .rec-card .emoji { font-size: 2rem; }
-  .rec-card .name { font-weight: 700; font-size: .85rem; margin-top: 2px; }
-  .rec-card .tag {
-    font-size: .7rem; padding: 2px 8px; border-radius: 50px; margin-top: 4px;
-    display: inline-block; font-weight: 600;
-  }
-  .rec-card .tag.t1 { background: rgba(81,207,102,.15); color: var(--green); }
-  .rec-card .tag.t2 { background: rgba(34,184,207,.15); color: var(--cyan); }
-  .rec-note { font-size: .8rem; color: var(--dim); line-height: 1.5; margin-top: 10px; }
-  .rec-waiting { color: var(--dim); font-size: .88rem; padding: 10px; line-height: 1.5; }
-  .conf-wrap { margin: 10px auto 0; max-width: 250px; }
-  .conf-label { font-size: .72rem; color: var(--dim); margin-bottom: 3px; text-align: center; }
-  .conf-outer { height: 8px; background: rgba(255,255,255,.06); border-radius: 4px; overflow: hidden; }
-  .conf-inner { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent), var(--green)); transition: width .4s; }
+  .toast.show { opacity: 1; }
 
-  /* ---- BET SIZING ---- */
-  .sizing-box {
-    background: rgba(34,184,207,.07); border-left: 3px solid var(--cyan);
-    padding: 12px 14px; border-radius: 0 12px 12px 0; margin-top: 10px;
-    font-size: .85rem; line-height: 1.6;
+  /* ==================== PAGE 2: ADVICE ==================== */
+  .rec-hero {
+    text-align: center; padding: 6px 0 10px;
   }
-  .sizing-box strong { color: var(--cyan); }
-  .bankroll-input-row {
-    display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 8px;
+  .rec-hero .heading {
+    font-size: .85rem; color: var(--green); font-weight: 700; margin-bottom: 14px;
   }
-  .bankroll-input-row label { font-size: .85rem; color: var(--dim); }
-  .bankroll-input-row input {
-    width: 110px; padding: 9px 12px; border-radius: 10px;
-    background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.1);
-    color: var(--text); font-size: 1rem; font-weight: 700; text-align: center; outline: none;
+  .rec-hero .big-picks {
+    display: flex; gap: 14px; justify-content: center; margin-bottom: 14px;
   }
-  .bankroll-input-row input:focus { border-color: var(--accent); }
+  .rec-hero .pick-card {
+    background: var(--card2); border: 2.5px solid var(--green);
+    border-radius: 18px; padding: 16px 22px; text-align: center;
+    min-width: 110px;
+  }
+  .rec-hero .pick-card.second { border-color: var(--cyan); }
+  .rec-hero .pick-card .e { font-size: 3rem; display: block; }
+  .rec-hero .pick-card .n { font-size: .9rem; font-weight: 700; margin-top: 4px; }
+  .rec-hero .pick-card .badge {
+    display: inline-block; font-size: .65rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 50px; margin-top: 6px;
+  }
+  .rec-hero .pick-card .badge.b1 { background: rgba(81,207,102,.15); color: var(--green); }
+  .rec-hero .pick-card .badge.b2 { background: rgba(34,184,207,.15); color: var(--cyan); }
 
-  /* ---- RANKING BARS ---- */
-  .rank-item { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
-  .rank-item .emoji { font-size: 1.4rem; width: 32px; text-align: center; }
-  .rank-item .bar-wrap { flex: 1; }
-  .rank-item .bar-bg {
-    height: 22px; background: rgba(0,0,0,.25); border-radius: 11px;
-    overflow: hidden; position: relative;
-  }
-  .rank-item .bar-fill {
-    height: 100%; border-radius: 11px; transition: width .35s;
-    display: flex; align-items: center; padding: 0 8px;
-    font-size: .72rem; font-weight: 700;
-  }
-  .rank-item .bar-fill.hot { background: var(--green); color: #0f0f1a; }
-  .rank-item .bar-fill.cold { background: var(--accent2); color: #fff; }
-  .rank-item .bar-fill.neutral { background: var(--dim); color: #0f0f1a; }
-  .rank-item .pct { width: 48px; text-align: right; font-size: .82rem; font-weight: 700; }
+  .conf-bar { max-width: 220px; margin: 0 auto 10px; }
+  .conf-bar .lbl { font-size: .68rem; color: var(--dim); margin-bottom: 3px; text-align: center; }
+  .conf-bar .track { height: 8px; background: rgba(255,255,255,.06); border-radius: 4px; overflow: hidden; }
+  .conf-bar .fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent), var(--green)); transition: width .4s; }
 
-  /* ---- HISTORY ---- */
-  .hist-scroll { max-height: 260px; overflow-y: auto; }
-  .hist-scroll::-webkit-scrollbar { width: 4px; }
-  .hist-scroll::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 2px; }
-  .hist-row {
-    display: flex; align-items: center; padding: 8px 10px;
-    background: var(--card2); border-radius: 10px; margin-bottom: 6px;
-    font-size: .85rem;
+  .rec-note {
+    font-size: .78rem; color: var(--dim); text-align: center;
+    line-height: 1.5; margin-bottom: 10px;
   }
-  .hist-row .num { color: var(--dim); width: 34px; font-weight: 600; font-size: .78rem; }
-  .hist-row .dice { flex: 1; text-align: center; font-size: 1.3rem; letter-spacing: 6px; }
-  .hist-row .del {
-    background: none; border: none; color: var(--dim); font-size: .75rem;
-    cursor: pointer; padding: 4px 8px; border-radius: 6px;
-  }
-  .hist-row .del:hover { color: var(--accent2); background: rgba(255,107,107,.1); }
 
-  /* ---- STATS ROW ---- */
-  .stats {
+  /* -- Bet sizing -- */
+  .sizing-card { margin-top: 2px; }
+  .bankroll-row {
+    display: flex; align-items: center; gap: 6px;
+    justify-content: center; margin-bottom: 10px;
+  }
+  .bankroll-row label { font-size: .85rem; color: var(--dim); font-weight: 600; }
+  .bankroll-row input {
+    width: 100px; padding: 10px; border-radius: 12px;
+    background: rgba(0,0,0,.3); border: 1.5px solid rgba(255,255,255,.1);
+    color: var(--text); font-size: 1.1rem; font-weight: 700;
+    text-align: center; outline: none;
+  }
+  .bankroll-row input:focus { border-color: var(--accent); }
+
+  .size-pills {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .pill {
+    background: var(--card2); border-radius: 12px; padding: 10px 14px;
+    text-align: center; flex: 1; min-width: 80px;
+  }
+  .pill .amt { font-size: 1.15rem; font-weight: 800; color: var(--cyan); }
+  .pill .tag { font-size: .62rem; color: var(--dim); margin-top: 2px; text-transform: uppercase; font-weight: 600; letter-spacing: .3px; }
+
+  .tip-box {
+    background: rgba(247,201,72,.06); border-left: 3px solid var(--accent);
+    padding: 10px 12px; border-radius: 0 12px 12px 0;
+    font-size: .78rem; color: var(--dim); line-height: 1.5;
+  }
+
+  /* ==================== PAGE 3: STATS ==================== */
+
+  /* Rank bars */
+  .rank-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+  .rank-row .e { font-size: 1.5rem; width: 34px; text-align: center; }
+  .rank-row .bar-bg {
+    flex: 1; height: 26px; background: rgba(0,0,0,.25);
+    border-radius: 13px; overflow: hidden;
+  }
+  .rank-row .bar-fill {
+    height: 100%; border-radius: 13px; transition: width .35s;
+    display: flex; align-items: center; padding: 0 10px;
+    font-size: .72rem; font-weight: 800;
+  }
+  .rank-row .bar-fill.hot { background: var(--green); color: #0f0f1a; }
+  .rank-row .bar-fill.cold { background: var(--accent2); color: #fff; }
+  .rank-row .bar-fill.mid { background: #555; color: #ccc; }
+  .rank-row .pct { width: 50px; text-align: right; font-size: .82rem; font-weight: 700; }
+
+  /* Quick stats */
+  .qs {
     display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 8px; margin-bottom: 10px;
+    gap: 8px; margin-bottom: 12px;
   }
-  .st { background: var(--card2); border-radius: 10px; padding: 12px 6px; text-align: center; }
-  .st .v { font-size: 1.25rem; font-weight: 800; }
-  .st .l { font-size: .68rem; color: var(--dim); margin-top: 2px; }
+  .qs-item { background: var(--card2); border-radius: 12px; padding: 14px 6px; text-align: center; }
+  .qs-item .v { font-size: 1.3rem; font-weight: 800; }
+  .qs-item .l { font-size: .62rem; color: var(--dim); margin-top: 2px; text-transform: uppercase; font-weight: 600; }
 
-  /* ---- EMPTY STATE ---- */
-  .empty { text-align: center; padding: 20px; color: var(--dim); font-size: .88rem; line-height: 1.5; }
-
-  /* ---- COLLAPSIBLE ---- */
-  .collapse-toggle {
-    width: 100%; background: none; border: none; color: var(--dim);
-    font-size: .82rem; cursor: pointer; padding: 6px 0;
-    display: flex; align-items: center; justify-content: center; gap: 4px;
+  /* ==================== PAGE 4: HISTORY ==================== */
+  .hist-item {
+    display: flex; align-items: center; padding: 10px 12px;
+    background: var(--card2); border-radius: 12px; margin-bottom: 8px;
   }
-  .collapse-toggle:hover { color: var(--text); }
-  .collapse-body { display: none; }
-  .collapse-body.open { display: block; }
-
-  @media (max-width: 400px) {
-    .picker { gap: 8px; }
-    .pick-btn { padding: 12px 4px; }
-    .pick-btn .emoji { font-size: 2rem; }
-    .die-slot { width: 64px; height: 64px; font-size: 2rem; }
+  .hist-item .num { color: var(--dim); font-weight: 700; font-size: .78rem; width: 36px; }
+  .hist-item .dice { flex: 1; text-align: center; font-size: 1.6rem; letter-spacing: 8px; }
+  .hist-item .del-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,107,107,.1); border: none;
+    color: var(--accent2); font-size: .8rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
+  .hist-item .del-btn:active { background: rgba(255,107,107,.25); }
+
+  .clear-all-row { text-align: center; margin-bottom: 10px; }
+  .clear-all-btn {
+    background: none; border: 1.5px solid rgba(255,107,107,.2);
+    color: var(--accent2); font-size: .78rem; font-weight: 600;
+    padding: 8px 20px; border-radius: 50px; cursor: pointer;
+  }
+  .clear-all-btn:active { background: rgba(255,107,107,.1); }
+
+  /* ==================== DETAIL TABLE ==================== */
+  .dtable { width: 100%; border-collapse: collapse; font-size: .78rem; }
+  .dtable th {
+    padding: 8px 6px; text-align: center; color: var(--accent);
+    font-size: .65rem; text-transform: uppercase; letter-spacing: .3px;
+  }
+  .dtable th:first-child { text-align: left; }
+  .dtable td {
+    padding: 9px 6px; text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.03);
+  }
+  .dtable td:first-child { text-align: left; }
+  .dtable .hot { color: var(--green); font-weight: 700; }
+  .dtable .cold { color: var(--accent2); font-weight: 700; }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <div class="hdr">
-    <h1>Bầu Cua Advisor</h1>
-    <p>Track dice results, get told what to bet on</p>
-  </div>
-
-  <!-- ===== RECOMMENDATION ===== -->
-  <div class="rec-box" id="recBox">
-    <div class="rec-title">What To Bet On Next</div>
-    <div id="recContent">
-      <div class="rec-waiting">
-        Log a few rounds of real dice results first.<br>
-        The more you log, the better the advice gets.
-      </div>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-rec" id="topRec">
+      <span style="color:var(--dim)">Log dice rolls to get betting advice</span>
     </div>
   </div>
 
-  <!-- ===== LOG DICE ===== -->
-  <div class="card">
-    <div class="card-title"><span class="icon">🎲</span> Log a Dice Roll</div>
+  <!-- PAGES -->
+  <div class="page-area">
+    <!-- PAGE: LOG -->
+    <div class="page active" id="pg-log">
+      <div class="step-msg" id="stepMsg">Tap the symbol on Die 1</div>
 
-    <div class="steps">
-      <div class="step-dot active" id="sd0">1</div>
-      <div class="step-line"></div>
-      <div class="step-dot" id="sd1">2</div>
-      <div class="step-line"></div>
-      <div class="step-dot" id="sd2">3</div>
+      <div class="die-row">
+        <div class="die-box current" id="d0" onclick="clearSlot(0)">
+          <span class="die-label">Die 1</span>
+          <button class="x-btn" onclick="event.stopPropagation();clearSlot(0)">X</button>
+        </div>
+        <div class="die-box" id="d1" onclick="clearSlot(1)">
+          <span class="die-label">Die 2</span>
+          <button class="x-btn" onclick="event.stopPropagation();clearSlot(1)">X</button>
+        </div>
+        <div class="die-box" id="d2" onclick="clearSlot(2)">
+          <span class="die-label">Die 3</span>
+          <button class="x-btn" onclick="event.stopPropagation();clearSlot(2)">X</button>
+        </div>
+      </div>
+
+      <div class="picker-grid" id="picker"></div>
+
+      <button class="log-btn" id="logBtn" disabled onclick="logRoll()">Log This Roll</button>
+
+      <div class="clear-link">
+        <button onclick="clearSlots()">Clear dice</button>
+      </div>
     </div>
 
-    <div class="step-label" id="stepLabel">Tap the symbol on Die 1</div>
-
-    <div class="die-slots">
-      <div class="die-slot current" id="slot0" onclick="clearSlot(0)">
-        <span class="placeholder">Die 1</span>
-        <button class="clear-x" onclick="event.stopPropagation(); clearSlot(0)">✕</button>
+    <!-- PAGE: ADVICE -->
+    <div class="page" id="pg-advice">
+      <div class="rec-hero" id="recHero">
+        <div class="empty">Log at least 2 rounds to see recommendations.</div>
       </div>
-      <div class="die-slot" id="slot1" onclick="clearSlot(1)">
-        <span class="placeholder">Die 2</span>
-        <button class="clear-x" onclick="event.stopPropagation(); clearSlot(1)">✕</button>
-      </div>
-      <div class="die-slot" id="slot2" onclick="clearSlot(2)">
-        <span class="placeholder">Die 3</span>
-        <button class="clear-x" onclick="event.stopPropagation(); clearSlot(2)">✕</button>
+      <div class="card sizing-card">
+        <div class="section-title"><span class="ico">💰</span> Bet Sizing</div>
+        <div class="bankroll-row">
+          <label>Bankroll $</label>
+          <input type="number" id="bankrollIn" value="1000" min="0"
+            inputmode="numeric" oninput="updateRec()">
+        </div>
+        <div class="size-pills" id="sizePills">
+          <div class="pill"><div class="amt">$20</div><div class="tag">Safe</div></div>
+          <div class="pill"><div class="amt">$50</div><div class="tag">Medium</div></div>
+          <div class="pill"><div class="amt">$100</div><div class="tag">Bold</div></div>
+        </div>
+        <div class="tip-box">Bet on the top 1-2 picks. If you're ahead, pocket your profit and play with winnings only.</div>
       </div>
     </div>
 
-    <div class="picker-label">Tap a symbol below:</div>
-    <div class="picker" id="picker"></div>
+    <!-- PAGE: STATS -->
+    <div class="page" id="pg-stats">
+      <div class="qs" id="qStats">
+        <div class="qs-item"><div class="v" id="qR">0</div><div class="l">Rounds</div></div>
+        <div class="qs-item"><div class="v" id="qH">--</div><div class="l">Hottest</div></div>
+        <div class="qs-item"><div class="v" id="qC">--</div><div class="l">Coldest</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><span class="ico">📊</span> Symbol Rankings</div>
+        <div id="rankArea"><div class="empty">Log some rounds first.</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><span class="ico">📋</span> Frequency Table</div>
+        <div id="tableArea"><div class="empty">No data yet.</div></div>
+      </div>
+    </div>
 
-    <div class="flash" id="flash"></div>
+    <!-- PAGE: HISTORY -->
+    <div class="page" id="pg-hist">
+      <div class="clear-all-row" id="clearRow" style="display:none">
+        <button class="clear-all-btn" onclick="clearHistory()">Clear All History</button>
+      </div>
+      <div id="histList"><div class="empty">No rolls logged yet.<br>Go to the Log tab to get started.</div></div>
+    </div>
+  </div>
 
-    <button class="btn btn-gold btn-big" id="logBtn" disabled onclick="logRoll()">
-      Log This Roll
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="goPage('log',this)">
+      <span class="ico">🎲</span><span class="txt">Log</span>
     </button>
-
-    <div class="btn-row" style="margin-top:10px;">
-      <button class="btn-outline btn-sm" onclick="clearAll()">Start Over</button>
-    </div>
-  </div>
-
-  <!-- ===== BANKROLL & SIZING ===== -->
-  <div class="card">
-    <div class="card-title"><span class="icon">💰</span> Bet Sizing</div>
-    <div class="bankroll-input-row">
-      <label>Your bankroll: $</label>
-      <input type="number" id="bankrollInput" value="1000" min="0" oninput="updateRec()">
-    </div>
-    <div class="sizing-box" id="sizingBox">
-      Log some rounds and enter your bankroll to get sizing advice.
-    </div>
-  </div>
-
-  <!-- ===== SYMBOL RANKINGS ===== -->
-  <div class="card">
-    <div class="card-title"><span class="icon">📊</span> Symbol Rankings</div>
-    <div id="rankArea">
-      <div class="empty">No data yet. Log some dice rolls above.</div>
-    </div>
-  </div>
-
-  <!-- ===== SESSION STATS ===== -->
-  <div class="card">
-    <div class="card-title"><span class="icon">📈</span> Session Stats</div>
-    <div class="stats">
-      <div class="st"><div class="v" id="stR">0</div><div class="l">Rounds</div></div>
-      <div class="st"><div class="v" id="stH">—</div><div class="l">Hottest</div></div>
-      <div class="st"><div class="v" id="stC">—</div><div class="l">Coldest</div></div>
-    </div>
-  </div>
-
-  <!-- ===== HISTORY ===== -->
-  <div class="card">
-    <div class="card-title"><span class="icon">📋</span> Roll History</div>
-    <div class="btn-row" style="margin-bottom:8px;">
-      <button class="btn-outline btn-sm" onclick="clearHistory()">Clear All</button>
-    </div>
-    <div class="hist-scroll" id="histList">
-      <div class="empty">No rolls logged yet.</div>
-    </div>
-  </div>
-
-  <!-- ===== DETAIL TABLE (collapsible) ===== -->
-  <div class="card">
-    <button class="collapse-toggle" onclick="toggleDetail()">
-      <span id="detailArrow">▶</span> Detailed Frequency Table
+    <button class="nav-btn" onclick="goPage('advice',this)">
+      <span class="ico">🎯</span><span class="txt">Advice</span>
     </button>
-    <div class="collapse-body" id="detailBody"></div>
+    <button class="nav-btn" onclick="goPage('stats',this)">
+      <span class="ico">📊</span><span class="txt">Stats</span>
+    </button>
+    <button class="nav-btn" onclick="goPage('hist',this)">
+      <span class="ico">📋</span><span class="txt">History</span>
+    </button>
   </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
+// ==================== DATA ====================
 const SYM = [
   { id:'gourd',   n:'Gourd',   vi:'Bầu', e:'🍐' },
   { id:'crab',    n:'Crab',    vi:'Cua',  e:'🦀' },
@@ -388,131 +473,126 @@ const SYM = [
   { id:'shrimp',  n:'Shrimp',  vi:'Tôm',  e:'🦐' },
   { id:'deer',    n:'Deer',    vi:'Nai',  e:'🦌' },
 ];
-const M = {}; SYM.forEach(s => M[s.id] = s);
+const MAP = {}; SYM.forEach(s => MAP[s.id] = s);
 
-// State
-let slots = [null, null, null];   // current 3 die picks (symbol ids)
-let cur = 0;                       // which slot we're filling (0-2)
-let hist = JSON.parse(localStorage.getItem('bc_hist') || '[]');
+let slots = [null, null, null];
+let cur = 0;
+let hist = JSON.parse(localStorage.getItem('bc2') || '[]');
+function save() { localStorage.setItem('bc2', JSON.stringify(hist)); }
 
-function save() { localStorage.setItem('bc_hist', JSON.stringify(hist)); }
+// ==================== NAV ====================
+function goPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  refreshAll();
+}
 
-// ========== PICKER GRID ==========
+// ==================== PICKER ====================
 function renderPicker() {
   document.getElementById('picker').innerHTML = SYM.map(s => `
-    <div class="pick-btn" onclick="pickSym('${s.id}')">
-      <span class="emoji">${s.e}</span>
-      <span class="label">${s.n}</span>
-      <span class="sublabel">${s.vi}</span>
+    <div class="sym-btn" ontouchstart="" onclick="pick('${s.id}')">
+      <span class="e">${s.e}</span>
+      <span class="n">${s.n}</span>
+      <span class="v">${s.vi}</span>
     </div>
   `).join('');
 }
 
-// ========== PICK A SYMBOL ==========
-function pickSym(id) {
-  if (cur > 2) return;
+// ==================== PICK / CLEAR ====================
+function pick(id) {
+  if (cur > 2) {
+    let empty = slots.indexOf(null);
+    if (empty === -1) return;
+    cur = empty;
+  }
   slots[cur] = id;
-  updateSlots();
   cur++;
-  if (cur > 2) cur = 2;
-  updateUI();
+  while (cur <= 2 && slots[cur] !== null) cur++;
+  if (cur > 2) {
+    let empty = slots.indexOf(null);
+    cur = empty === -1 ? 3 : empty;
+  }
+  syncUI();
 }
 
-// ========== CLEAR A SLOT ==========
 function clearSlot(i) {
   if (slots[i] === null) return;
   slots[i] = null;
-  // shift focus to this slot
   cur = i;
-  updateUI();
+  syncUI();
 }
 
-function clearAll() {
+function clearSlots() {
   slots = [null, null, null];
   cur = 0;
-  updateUI();
+  syncUI();
 }
 
-// ========== UPDATE SLOT VISUALS ==========
-function updateSlots() {
-  for (let i = 0; i < 3; i++) {
-    const el = document.getElementById('slot' + i);
-    const s = slots[i];
-    el.classList.remove('filled', 'current');
-    if (s !== null) {
-      el.classList.add('filled');
-      el.innerHTML = M[s].e + `<button class="clear-x" onclick="event.stopPropagation(); clearSlot(${i})">✕</button>`;
-    } else {
-      el.innerHTML = `<span class="placeholder">Die ${i+1}</span><button class="clear-x" onclick="event.stopPropagation(); clearSlot(${i})" style="display:none">✕</button>`;
-    }
-  }
-}
-
-function updateUI() {
-  updateSlots();
-
-  // Find first empty slot for "current"
-  let firstEmpty = slots.findIndex(s => s === null);
-  if (firstEmpty === -1) firstEmpty = -1;
-  cur = firstEmpty === -1 ? 3 : firstEmpty;
-
-  for (let i = 0; i < 3; i++) {
-    const dot = document.getElementById('sd' + i);
-    dot.classList.remove('active', 'done');
-    if (slots[i] !== null) dot.classList.add('done');
-    if (i === cur) dot.classList.add('active');
-
-    const el = document.getElementById('slot' + i);
-    el.classList.remove('current');
-    if (i === cur) el.classList.add('current');
-  }
-
-  const label = document.getElementById('stepLabel');
+function syncUI() {
+  const allDone = slots.every(s => s !== null);
+  const msg = document.getElementById('stepMsg');
   const btn = document.getElementById('logBtn');
-  const allFilled = slots.every(s => s !== null);
 
-  if (allFilled) {
-    label.textContent = 'All 3 dice set! Hit the button to log it.';
-    label.style.color = 'var(--green)';
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById('d' + i);
+    el.classList.remove('filled', 'current');
+    if (slots[i] !== null) {
+      el.classList.add('filled');
+      el.querySelector('.die-label').style.display = 'none';
+      el.childNodes[0].nodeType === 3
+        ? el.firstChild.textContent = MAP[slots[i]].e
+        : el.insertBefore(document.createTextNode(MAP[slots[i]].e), el.firstChild);
+    } else {
+      el.querySelector('.die-label').style.display = '';
+      if (el.childNodes[0] && el.childNodes[0].nodeType === 3) el.childNodes[0].textContent = '';
+    }
+    if (i === cur && !allDone) el.classList.add('current');
+  }
+
+  if (allDone) {
+    msg.textContent = 'All set! Tap "Log This Roll"';
+    msg.className = 'step-msg done';
     btn.disabled = false;
   } else {
-    label.textContent = `Tap the symbol shown on Die ${cur + 1}`;
-    label.style.color = 'var(--cyan)';
+    const nextEmpty = slots.indexOf(null) + 1;
+    msg.textContent = `Tap the symbol on Die ${nextEmpty}`;
+    msg.className = 'step-msg';
     btn.disabled = true;
   }
 }
 
-// ========== LOG ROLL ==========
+// ==================== LOG / DELETE ====================
 function logRoll() {
   if (slots.some(s => s === null)) return;
   hist.push({ r: hist.length + 1, d: [...slots], t: Date.now() });
   save();
-
-  // Flash confirmation
-  const flash = document.getElementById('flash');
-  flash.className = 'flash show ok';
-  flash.textContent = '✓  Round ' + hist.length + ' logged:  ' + slots.map(s => M[s].e).join(' ');
-  setTimeout(() => flash.classList.remove('show'), 2000);
-
-  slots = [null, null, null];
-  cur = 0;
-  updateUI();
+  showToast('Round ' + hist.length + ' logged  ' + slots.map(s => MAP[s].e).join(' '));
+  clearSlots();
   refreshAll();
 }
 
-// ========== DELETE / CLEAR HISTORY ==========
-function delRoll(idx) {
-  hist.splice(idx, 1);
-  hist.forEach((h, i) => h.r = i + 1);
+function delRoll(i) {
+  hist.splice(i, 1);
+  hist.forEach((h, idx) => h.r = idx + 1);
   save(); refreshAll();
 }
+
 function clearHistory() {
   if (!hist.length) return;
   if (!confirm('Clear all history?')) return;
   hist = []; save(); refreshAll();
 }
 
-// ========== FREQUENCY ANALYSIS ==========
+function showToast(txt) {
+  const t = document.getElementById('toast');
+  t.textContent = txt;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ==================== ANALYSIS ====================
 function analyze() {
   const freq = {}, recent = {};
   SYM.forEach(s => { freq[s.id] = 0; recent[s.id] = 0; });
@@ -526,186 +606,166 @@ function analyze() {
   return { freq, recent, total, rounds: hist.length };
 }
 
-function scores() {
+function getScores() {
   const { freq, recent, total, rounds } = analyze();
   if (rounds < 2) return null;
   const exp = total / 6;
-  const rTotal = Math.min(rounds, 10) * 3;
-  const rExp = rTotal / 6;
+  const rT = Math.min(rounds, 10) * 3;
+  const rE = rT / 6;
   return SYM.map(s => {
     const f = freq[s.id], r = recent[s.id];
     const dev = (f - exp) / Math.max(1, Math.sqrt(exp));
-    const rDev = (r - rExp) / Math.max(1, Math.sqrt(rExp));
-    const hot = rDev * 0.6 + dev * 0.4;
-    return { ...s, count:f, rc:r, pct:f/total*100, rpct:r/rTotal*100, dev, rDev, hot };
+    const rd = (r - rE) / Math.max(1, Math.sqrt(rE));
+    return { ...s, f, r, pct: f/total*100, rpct: r/rT*100, dev, rd, hot: rd*.6 + dev*.4 };
   }).sort((a,b) => b.hot - a.hot);
 }
 
-// ========== RECOMMENDATION ==========
+// ==================== UPDATE REC ====================
 function updateRec() {
-  const sc = scores();
-  const el = document.getElementById('recContent');
-  const bankroll = parseInt(document.getElementById('bankrollInput').value) || 0;
-  const sBox = document.getElementById('sizingBox');
+  const sc = getScores();
+  const topEl = document.getElementById('topRec');
+  const heroEl = document.getElementById('recHero');
+  const bank = parseInt(document.getElementById('bankrollIn').value) || 0;
+
+  // Sizing
+  if (bank > 0) {
+    const c = Math.max(1, Math.floor(bank * 0.02));
+    const m = Math.max(1, Math.floor(bank * 0.05));
+    const a = Math.max(1, Math.floor(bank * 0.10));
+    document.getElementById('sizePills').innerHTML = `
+      <div class="pill"><div class="amt">$${c}</div><div class="tag">Safe (2%)</div></div>
+      <div class="pill"><div class="amt">$${m}</div><div class="tag">Medium (5%)</div></div>
+      <div class="pill"><div class="amt">$${a}</div><div class="tag">Bold (10%)</div></div>`;
+  }
 
   if (!sc) {
-    el.innerHTML = `<div class="rec-waiting">
-      ${hist.length === 0
-        ? 'Log your first dice roll below to get started!'
-        : `${hist.length} round logged. Log a couple more for better advice.`}
-    </div>`;
-    sBox.textContent = 'Log some rounds to get bet sizing advice.';
+    topEl.innerHTML = `<span style="color:var(--dim)">Log ${2 - hist.length} more round${hist.length < 1 ? 's' : ''} for advice</span>`;
+    heroEl.innerHTML = '<div class="empty">Log at least 2 rounds to see recommendations.</div>';
     return;
   }
 
-  const top = sc.slice(0, 2);
+  const top2 = sc.slice(0, 2);
   const conf = Math.min(100, Math.round((hist.length / 30) * 50 + Math.abs(sc[0].hot - sc[5].hot) * 10));
-  const spread = Math.abs(sc[0].hot - sc[5].hot);
 
-  if (spread < 0.3 && hist.length < 12) {
-    el.innerHTML = `<div class="rec-waiting" style="color:var(--cyan)">
-      Frequencies are still pretty even. Log more rounds for a clearer edge.<br>
-      For now, pick 1-2 symbols you like and bet small.
+  // Top bar compact
+  topEl.innerHTML = `
+    <div style="font-size:.68rem; color:var(--dim); margin-bottom:3px;">BET ON:</div>
+    <div class="picks">
+      <span class="chip"><span class="e">${top2[0].e}</span> ${top2[0].n}</span>
+      <span class="chip s"><span class="e">${top2[1].e}</span> ${top2[1].n}</span>
+    </div>
+    <div class="sub">${conf}% confidence &middot; ${hist.length} rounds tracked</div>`;
+
+  // Full advice page
+  heroEl.innerHTML = `
+    <div class="heading">Recommended Bets</div>
+    <div class="big-picks">
+      <div class="pick-card">
+        <span class="e">${top2[0].e}</span>
+        <div class="n">${top2[0].n}</div>
+        <span class="badge b1">#1 PICK</span>
+      </div>
+      <div class="pick-card second">
+        <span class="e">${top2[1].e}</span>
+        <div class="n">${top2[1].n}</div>
+        <span class="badge b2">#2 PICK</span>
+      </div>
+    </div>
+    <div class="conf-bar">
+      <div class="lbl">Confidence: ${conf}% &middot; ${hist.length} rounds tracked</div>
+      <div class="track"><div class="fill" style="width:${conf}%"></div></div>
+    </div>
+    <div class="rec-note">
+      ${top2[0].n} appeared ${top2[0].rpct.toFixed(0)}% in last 10 rounds (expected 17%).
+      ${top2[0].hot > 0.5 ? 'Running HOT!' : 'Slight edge detected.'}
+      Log more rounds for better accuracy.
     </div>`;
-  } else {
-    el.innerHTML = `
-      <div class="rec-picks">
-        ${top.map((s,i) => `
-          <div class="rec-card">
-            <div class="emoji">${s.e}</div>
-            <div class="name">${s.n}</div>
-            <span class="tag ${i===0?'t1':'t2'}">${i===0?'#1 PICK':'#2 PICK'}</span>
-          </div>
-        `).join('')}
-      </div>
-      <div class="conf-wrap">
-        <div class="conf-label">Confidence: ${conf}% — ${hist.length} rounds tracked</div>
-        <div class="conf-outer"><div class="conf-inner" style="width:${conf}%"></div></div>
-      </div>
-      <div class="rec-note">
-        ${sc[0].n} hit ${sc[0].rpct.toFixed(0)}% in last 10 rounds (expected 17%).
-        ${sc[0].hot > 0.5 ? 'Running hot — ride it!' : 'Slight edge detected.'}
-        More rounds = better accuracy.
-      </div>`;
-  }
-
-  // Bet sizing
-  if (bankroll > 0) {
-    const c = Math.max(1, Math.floor(bankroll * 0.02));
-    const m = Math.max(1, Math.floor(bankroll * 0.05));
-    const a = Math.max(1, Math.floor(bankroll * 0.10));
-    sBox.innerHTML = `
-      <strong>Recommended bet sizes:</strong><br>
-      Safe: <strong>$${c}</strong> &nbsp;|&nbsp;
-      Medium: <strong>$${m}</strong> &nbsp;|&nbsp;
-      Aggressive: <strong>$${a}</strong><br>
-      <span style="color:var(--dim)">Bet on the top 1-2 picks shown above. Pocket profits when you're ahead.</span>`;
-  } else {
-    sBox.textContent = 'Enter your bankroll to see bet sizing.';
-  }
 }
 
-// ========== RANKINGS ==========
+// ==================== RANKINGS ====================
 function renderRanks() {
   const area = document.getElementById('rankArea');
   const { freq, total } = analyze();
-  if (!total) { area.innerHTML = '<div class="empty">No data yet.</div>'; return; }
+  if (!total) { area.innerHTML = '<div class="empty">Log some rounds first.</div>'; return; }
   const exp = 100/6;
-  const items = SYM.map(s => ({ ...s, c: freq[s.id], p: freq[s.id]/total*100 }))
-    .sort((a,b) => b.p - a.p);
+  const items = SYM.map(s => ({ ...s, c:freq[s.id], p:freq[s.id]/total*100 })).sort((a,b) => b.p - a.p);
   const mx = Math.max(...items.map(i => i.p), exp + 5);
   area.innerHTML = items.map(s => {
-    const diff = s.p - exp;
-    const cls = diff > 2 ? 'hot' : diff < -2 ? 'cold' : 'neutral';
-    const color = cls === 'hot' ? 'var(--green)' : cls === 'cold' ? 'var(--accent2)' : 'var(--dim)';
-    return `<div class="rank-item">
-      <span class="emoji">${s.e}</span>
-      <div class="bar-wrap"><div class="bar-bg">
-        <div class="bar-fill ${cls}" style="width:${(s.p/mx)*100}%">${s.c}×</div>
-      </div></div>
-      <span class="pct" style="color:${color}">${s.p.toFixed(1)}%</span>
+    const d = s.p - exp;
+    const cls = d > 2 ? 'hot' : d < -2 ? 'cold' : 'mid';
+    const clr = cls==='hot' ? 'var(--green)' : cls==='cold' ? 'var(--accent2)' : 'var(--dim)';
+    return `<div class="rank-row">
+      <span class="e">${s.e}</span>
+      <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${(s.p/mx)*100}%">${s.c}x</div></div>
+      <span class="pct" style="color:${clr}">${s.p.toFixed(1)}%</span>
     </div>`;
   }).join('');
 }
 
-// ========== STATS ==========
+// ==================== STATS ====================
 function renderStats() {
   const { freq, total, rounds } = analyze();
-  document.getElementById('stR').textContent = rounds;
+  document.getElementById('qR').textContent = rounds;
   if (total > 0) {
     const sorted = SYM.slice().sort((a,b) => freq[b.id] - freq[a.id]);
-    document.getElementById('stH').textContent = sorted[0].e;
-    document.getElementById('stC').textContent = sorted[5].e;
+    document.getElementById('qH').textContent = sorted[0].e;
+    document.getElementById('qC').textContent = sorted[5].e;
   } else {
-    document.getElementById('stH').textContent = '—';
-    document.getElementById('stC').textContent = '—';
+    document.getElementById('qH').textContent = '--';
+    document.getElementById('qC').textContent = '--';
   }
 }
 
-// ========== HISTORY ==========
+// ==================== TABLE ====================
+function renderTable() {
+  const area = document.getElementById('tableArea');
+  const { freq, recent, total, rounds } = analyze();
+  if (!total) { area.innerHTML = '<div class="empty">No data yet.</div>'; return; }
+  const rT = Math.min(rounds, 10) * 3;
+  area.innerHTML = `<table class="dtable">
+    <tr><th style="text-align:left">Symbol</th><th>Hits</th><th>%</th><th>Last 10</th><th>vs Exp</th></tr>
+    ${SYM.map(s => {
+      const f=freq[s.id], r=recent[s.id];
+      const p=f/total*100, rp=rT?r/rT*100:0, d=p-100/6;
+      const c = d>2?'hot':d<-2?'cold':'';
+      return `<tr><td>${s.e} ${s.n}</td><td>${f}</td><td class="${c}">${p.toFixed(1)}%</td>
+        <td>${rp.toFixed(1)}%</td><td class="${c}">${d>=0?'+':''}${d.toFixed(1)}%</td></tr>`;
+    }).join('')}
+  </table>`;
+}
+
+// ==================== HISTORY ====================
 function renderHist() {
   const el = document.getElementById('histList');
-  if (!hist.length) { el.innerHTML = '<div class="empty">No rolls yet.</div>'; return; }
+  const cr = document.getElementById('clearRow');
+  if (!hist.length) {
+    el.innerHTML = '<div class="empty">No rolls logged yet.<br>Go to the Log tab to get started.</div>';
+    cr.style.display = 'none';
+    return;
+  }
+  cr.style.display = '';
   el.innerHTML = [...hist].reverse().map((h, ri) => {
     const idx = hist.length - 1 - ri;
-    return `<div class="hist-row">
+    return `<div class="hist-item">
       <span class="num">#${h.r}</span>
-      <span class="dice">${h.d.map(d => M[d].e).join('')}</span>
-      <button class="del" onclick="delRoll(${idx})">✕</button>
+      <span class="dice">${h.d.map(d => MAP[d].e).join('')}</span>
+      <button class="del-btn" onclick="delRoll(${idx})">X</button>
     </div>`;
   }).join('');
 }
 
-// ========== DETAIL TABLE ==========
-function toggleDetail() {
-  const body = document.getElementById('detailBody');
-  const arrow = document.getElementById('detailArrow');
-  body.classList.toggle('open');
-  arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
-  if (body.classList.contains('open')) renderDetail();
-}
-function renderDetail() {
-  const body = document.getElementById('detailBody');
-  const { freq, recent, total, rounds } = analyze();
-  if (!total) { body.innerHTML = '<div class="empty">No data.</div>'; return; }
-  const rTotal = Math.min(rounds, 10) * 3;
-  body.innerHTML = `
-    <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:.82rem;">
-      <tr style="color:var(--accent); font-size:.72rem; text-transform:uppercase;">
-        <th style="padding:8px; text-align:left;">Symbol</th>
-        <th style="padding:8px;">Count</th>
-        <th style="padding:8px;">Overall</th>
-        <th style="padding:8px;">Last 10</th>
-        <th style="padding:8px;">vs 16.7%</th>
-      </tr>
-      ${SYM.map(s => {
-        const f = freq[s.id], r = recent[s.id];
-        const p = (f/total*100), rp = rTotal ? (r/rTotal*100) : 0;
-        const d = p - 100/6;
-        const c = d > 2 ? 'color:var(--green)' : d < -2 ? 'color:var(--accent2)' : '';
-        return `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
-          <td style="padding:8px">${s.e} ${s.n}</td>
-          <td style="padding:8px; text-align:center">${f}</td>
-          <td style="padding:8px; text-align:center; ${c}; font-weight:600">${p.toFixed(1)}%</td>
-          <td style="padding:8px; text-align:center">${rp.toFixed(1)}%</td>
-          <td style="padding:8px; text-align:center; ${c}; font-weight:600">${d>=0?'+':''}${d.toFixed(1)}%</td>
-        </tr>`;
-      }).join('')}
-    </table>`;
-}
-
-// ========== REFRESH ==========
+// ==================== REFRESH ====================
 function refreshAll() {
   updateRec();
   renderRanks();
   renderStats();
+  renderTable();
   renderHist();
-  if (document.getElementById('detailBody').classList.contains('open')) renderDetail();
 }
 
-// ========== INIT ==========
+// ==================== INIT ====================
 renderPicker();
-updateUI();
+syncUI();
 refreshAll();
 </script>
 </body>
