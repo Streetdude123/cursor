@@ -8,765 +8,722 @@
 <meta name="theme-color" content="#0f0f1a">
 <title>Bầu Cua Advisor</title>
 <style>
-  :root {
-    --bg: #0f0f1a;
-    --card: #181830;
-    --card2: #22223a;
-    --accent: #f7c948;
-    --accent2: #ff6b6b;
-    --green: #51cf66;
-    --cyan: #22b8cf;
-    --text: #f1f3f5;
-    --dim: #868e96;
-    --r: 18px;
-    --safe-b: env(safe-area-inset-bottom, 0px);
-    --nav-h: 62px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    font-family: -apple-system, system-ui, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-tap-highlight-color: transparent;
-    -webkit-text-size-adjust: 100%;
-    touch-action: manipulation;
-  }
+:root {
+  --bg: #0f0f1a; --card: #181830; --card2: #22223a;
+  --accent: #f7c948; --accent2: #ff6b6b; --green: #51cf66;
+  --cyan: #22b8cf; --text: #f1f3f5; --dim: #868e96;
+  --orange: #ff922b; --r: 18px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  height:100%;overflow:hidden;
+  font-family:-apple-system,system-ui,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);
+  -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%;touch-action:manipulation;
+}
 
-  /* ==================== APP SHELL ==================== */
-  .app {
-    display: flex; flex-direction: column;
-    height: 100%; height: 100dvh;
-    max-width: 480px; margin: 0 auto;
-    position: relative;
-  }
+/* ===== APP SHELL ===== */
+.app{display:flex;flex-direction:column;height:100%;height:100dvh;max-width:480px;margin:0 auto;position:relative}
 
-  /* -- Sticky top recommendation bar -- */
-  .top-bar {
-    flex-shrink: 0;
-    background: var(--card);
-    border-bottom: 1px solid rgba(255,255,255,.05);
-    padding: 10px 16px;
-    padding-top: calc(env(safe-area-inset-top, 8px) + 4px);
-    min-height: 54px;
-    display: flex; align-items: center; justify-content: center;
-    text-align: center;
-    z-index: 10;
-  }
-  .top-rec {
-    font-size: .82rem; font-weight: 700; color: var(--dim);
-    width: 100%;
-  }
-  .top-rec .picks {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; margin-top: 4px;
-  }
-  .top-rec .chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(81,207,102,.1); border: 1.5px solid var(--green);
-    border-radius: 50px; padding: 4px 14px 4px 8px;
-    font-size: .85rem; font-weight: 700; color: var(--green);
-  }
-  .top-rec .chip .e { font-size: 1.2rem; }
-  .top-rec .chip.s { border-color: var(--cyan); color: var(--cyan); background: rgba(34,184,207,.1); }
-  .top-rec .sub { font-size: .68rem; color: var(--dim); font-weight: 500; margin-top: 3px; }
+/* Top bar */
+.top-bar{
+  flex-shrink:0;background:var(--card);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  padding:8px 14px;padding-top:calc(env(safe-area-inset-top,6px)+4px);
+  text-align:center;z-index:10;
+}
+.top-rec{font-size:.8rem;font-weight:700;color:var(--dim);width:100%}
+.top-rec .picks{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px}
+.top-rec .chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(81,207,102,.1);border:1.5px solid var(--green);
+  border-radius:50px;padding:3px 12px 3px 7px;font-size:.82rem;font-weight:700;color:var(--green);
+}
+.top-rec .chip .ce{font-size:1.1rem}
+.top-rec .chip.s2{border-color:var(--cyan);color:var(--cyan);background:rgba(34,184,207,.1)}
+.top-rec .sub{font-size:.65rem;color:var(--dim);font-weight:500;margin-top:2px}
 
-  /* -- Scrollable page area -- */
-  .page-area {
-    flex: 1; overflow: hidden; position: relative;
-  }
-  .page {
-    position: absolute; inset: 0;
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: 14px 14px calc(var(--nav-h) + var(--safe-b) + 14px);
-    display: none;
-  }
-  .page.active { display: block; }
+/* Pages */
+.page-area{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px 80px;display:none}
+.page.active{display:block}
 
-  /* -- Bottom nav -- */
-  .bottom-nav {
-    flex-shrink: 0;
-    display: flex;
-    background: var(--card);
-    border-top: 1px solid rgba(255,255,255,.06);
-    padding-bottom: var(--safe-b);
-    position: relative; z-index: 10;
-  }
-  .nav-btn {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 8px 0 6px; gap: 2px;
-    background: none; border: none; cursor: pointer;
-    color: var(--dim); transition: color .2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .nav-btn .ico { font-size: 1.4rem; line-height: 1; }
-  .nav-btn .txt { font-size: .65rem; font-weight: 600; }
-  .nav-btn.active .ico, .nav-btn.active .txt { color: var(--accent); }
+/* Bottom nav */
+.bnav{
+  flex-shrink:0;display:flex;background:var(--card);
+  border-top:1px solid rgba(255,255,255,.06);
+  padding-bottom:var(--safe-b);z-index:10;
+}
+.nb{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:7px 0 5px;gap:1px;background:none;border:none;cursor:pointer;color:var(--dim);
+  transition:color .2s;-webkit-tap-highlight-color:transparent;
+}
+.nb .ni{font-size:1.35rem;line-height:1}
+.nb .nt{font-size:.6rem;font-weight:700;letter-spacing:.2px}
+.nb.on .ni,.nb.on .nt{color:var(--accent)}
 
-  /* ==================== SHARED ==================== */
-  .card {
-    background: var(--card); border-radius: var(--r);
-    padding: 16px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,.04);
-  }
-  .section-title {
-    font-size: .9rem; font-weight: 700; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 7px;
-  }
-  .section-title .ico { font-size: 1.1rem; }
+/* ===== SHARED ===== */
+.card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,.04)}
+.stitle{font-size:.88rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.empty{text-align:center;padding:20px 10px;color:var(--dim);font-size:.85rem;line-height:1.5}
 
-  .empty {
-    text-align: center; padding: 24px 12px; color: var(--dim);
-    font-size: .88rem; line-height: 1.5;
-  }
+/* ===== LOG PAGE ===== */
+.step-msg{text-align:center;font-size:.85rem;font-weight:700;margin-bottom:12px;min-height:22px;color:var(--cyan)}
+.step-msg.ok{color:var(--green)}
 
-  /* ==================== PAGE 1: LOG ==================== */
+.die-row{display:flex;gap:10px;justify-content:center;margin-bottom:12px}
+.dbox{
+  width:30%;max-width:96px;aspect-ratio:1;border-radius:16px;background:var(--card2);
+  border:2.5px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;position:relative;transition:all .2s;cursor:pointer;
+}
+.dbox .dl{font-size:.58rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;position:absolute;bottom:5px}
+.dbox.filled{border-style:solid;border-color:var(--accent);background:rgba(247,201,72,.06)}
+.dbox.filled .dl{display:none}
+.dbox.cur{border-color:var(--cyan);border-style:solid;animation:glow 1.4s infinite}
+.dbox .xb{
+  position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;
+  background:var(--accent2);color:#fff;border:2px solid var(--bg);
+  font-size:.6rem;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer;
+}
+.dbox.filled .xb{display:flex}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,184,207,.25)}50%{box-shadow:0 0 0 10px rgba(34,184,207,0)}}
 
-  /* -- Die slots -- */
-  .die-row {
-    display: flex; gap: 10px; justify-content: center; margin-bottom: 14px;
-  }
-  .die-box {
-    width: 30%; max-width: 100px; aspect-ratio: 1;
-    border-radius: 16px; background: var(--card2);
-    border: 2.5px dashed rgba(255,255,255,.1);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-size: 2.6rem; position: relative;
-    transition: all .2s; cursor: pointer;
-  }
-  .die-box .die-label {
-    font-size: .6rem; font-weight: 700; color: var(--dim);
-    text-transform: uppercase; letter-spacing: .5px;
-    position: absolute; bottom: 6px;
-  }
-  .die-box.filled {
-    border-style: solid; border-color: var(--accent);
-    background: rgba(247,201,72,.06);
-  }
-  .die-box.filled .die-label { display: none; }
-  .die-box.current {
-    border-color: var(--cyan); border-style: solid;
-    animation: glow 1.4s infinite;
-  }
-  .die-box .x-btn {
-    position: absolute; top: -7px; right: -7px;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent2); color: #fff; border: 2px solid var(--bg);
-    font-size: .65rem; font-weight: 800;
-    display: none; align-items: center; justify-content: center;
-    cursor: pointer;
-  }
-  .die-box.filled .x-btn { display: flex; }
-  @keyframes glow {
-    0%,100% { box-shadow: 0 0 0 0 rgba(34,184,207,.25); }
-    50% { box-shadow: 0 0 0 10px rgba(34,184,207,0); }
-  }
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sbtn{
+  background:var(--card2);border:2.5px solid transparent;border-radius:14px;
+  padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none;
+  min-height:80px;justify-content:center;
+}
+.sbtn:active{transform:scale(.9);background:rgba(247,201,72,.12)}
+.sbtn .se{font-size:2.2rem;line-height:1.1}
+.sbtn .sn{font-size:.72rem;font-weight:700}
+.sbtn .sv{font-size:.6rem;color:var(--dim)}
 
-  .step-msg {
-    text-align: center; font-size: .88rem; font-weight: 700;
-    margin-bottom: 14px; min-height: 24px;
-    color: var(--cyan);
-  }
-  .step-msg.done { color: var(--green); }
+.logbtn{
+  width:100%;padding:16px;border:none;border-radius:14px;
+  font-size:1.05rem;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),#e6a700);color:#1a0a2e;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.logbtn:disabled{opacity:.3;cursor:default}
+.logbtn:active:not(:disabled){transform:scale(.97)}
 
-  /* -- Big symbol picker -- */
-  .picker-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px; margin-bottom: 14px;
-  }
-  .sym-btn {
-    background: var(--card2); border: 2.5px solid transparent;
-    border-radius: 16px; padding: 14px 4px 12px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 2px;
-    cursor: pointer; transition: all .12s;
-    -webkit-user-select: none; user-select: none;
-    min-height: 88px; justify-content: center;
-  }
-  .sym-btn:active { transform: scale(.91); background: rgba(247,201,72,.12); }
-  .sym-btn .e { font-size: 2.4rem; line-height: 1.1; }
-  .sym-btn .n { font-size: .78rem; font-weight: 700; }
-  .sym-btn .v { font-size: .65rem; color: var(--dim); }
+.aux-row{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.aux-btn{
+  background:var(--card2);border:1.5px solid rgba(255,255,255,.08);border-radius:50px;
+  color:var(--dim);font-size:.75rem;font-weight:600;padding:7px 14px;cursor:pointer;
+  display:flex;align-items:center;gap:4px;
+}
+.aux-btn:active{background:rgba(255,255,255,.06)}
+.aux-btn .ai{font-size:.9rem}
 
-  /* -- Log button -- */
-  .log-btn {
-    width: 100%; padding: 18px; border: none; border-radius: 16px;
-    font-size: 1.1rem; font-weight: 800; cursor: pointer;
-    background: linear-gradient(135deg, var(--accent), #e6a700);
-    color: #1a0a2e; transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .log-btn:disabled { opacity: .3; cursor: default; }
-  .log-btn:active:not(:disabled) { transform: scale(.97); }
+/* Live tip card */
+.tip-card{
+  background:linear-gradient(135deg,rgba(34,184,207,.08),rgba(247,201,72,.06));
+  border:1.5px solid rgba(34,184,207,.15);border-radius:14px;
+  padding:12px 14px;margin-top:12px;
+}
+.tip-card .tip-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:.75rem;font-weight:700;color:var(--cyan)}
+.tip-card .tip-text{font-size:.8rem;color:var(--text);line-height:1.5}
+.tip-card .tip-text strong{color:var(--accent)}
 
-  .clear-link {
-    text-align: center; margin-top: 10px;
-  }
-  .clear-link button {
-    background: none; border: none; color: var(--dim);
-    font-size: .78rem; cursor: pointer; padding: 6px 12px;
-    text-decoration: underline; text-underline-offset: 3px;
-  }
+/* Toast */
+.toast{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-10px);
+  background:var(--green);color:#0f0f1a;padding:9px 22px;border-radius:50px;
+  font-size:.85rem;font-weight:700;z-index:100;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* -- Flash toast -- */
-  .toast {
-    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-    background: var(--green); color: #0f0f1a; padding: 10px 24px;
-    border-radius: 50px; font-size: .88rem; font-weight: 700;
-    z-index: 100; opacity: 0; pointer-events: none;
-    transition: opacity .3s, transform .3s;
-    white-space: nowrap; box-shadow: 0 6px 24px rgba(0,0,0,.4);
-  }
-  .toast.show { opacity: 1; }
+/* ===== ADVICE PAGE ===== */
+.rec-hero{text-align:center;padding:4px 0 8px}
+.rec-hero .rh{font-size:.85rem;color:var(--green);font-weight:700;margin-bottom:12px}
+.rec-hero .bp{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
+.pcard{
+  background:var(--card2);border:2.5px solid var(--green);border-radius:18px;
+  padding:14px 20px;text-align:center;min-width:105px;
+}
+.pcard.p2{border-color:var(--cyan)}
+.pcard .pe{font-size:2.8rem;display:block}
+.pcard .pn{font-size:.88rem;font-weight:700;margin-top:2px}
+.pcard .pb{
+  display:inline-block;font-size:.62rem;font-weight:700;
+  padding:3px 10px;border-radius:50px;margin-top:5px;
+}
+.pcard .pb.b1{background:rgba(81,207,102,.15);color:var(--green)}
+.pcard .pb.b2{background:rgba(34,184,207,.15);color:var(--cyan)}
 
-  /* ==================== PAGE 2: ADVICE ==================== */
-  .rec-hero {
-    text-align: center; padding: 6px 0 10px;
-  }
-  .rec-hero .heading {
-    font-size: .85rem; color: var(--green); font-weight: 700; margin-bottom: 14px;
-  }
-  .rec-hero .big-picks {
-    display: flex; gap: 14px; justify-content: center; margin-bottom: 14px;
-  }
-  .rec-hero .pick-card {
-    background: var(--card2); border: 2.5px solid var(--green);
-    border-radius: 18px; padding: 16px 22px; text-align: center;
-    min-width: 110px;
-  }
-  .rec-hero .pick-card.second { border-color: var(--cyan); }
-  .rec-hero .pick-card .e { font-size: 3rem; display: block; }
-  .rec-hero .pick-card .n { font-size: .9rem; font-weight: 700; margin-top: 4px; }
-  .rec-hero .pick-card .badge {
-    display: inline-block; font-size: .65rem; font-weight: 700;
-    padding: 3px 10px; border-radius: 50px; margin-top: 6px;
-  }
-  .rec-hero .pick-card .badge.b1 { background: rgba(81,207,102,.15); color: var(--green); }
-  .rec-hero .pick-card .badge.b2 { background: rgba(34,184,207,.15); color: var(--cyan); }
+.cbar{max-width:220px;margin:0 auto 8px}
+.cbar .cl{font-size:.65rem;color:var(--dim);margin-bottom:3px;text-align:center}
+.cbar .ct{height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.cbar .cf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--green));transition:width .4s}
 
-  .conf-bar { max-width: 220px; margin: 0 auto 10px; }
-  .conf-bar .lbl { font-size: .68rem; color: var(--dim); margin-bottom: 3px; text-align: center; }
-  .conf-bar .track { height: 8px; background: rgba(255,255,255,.06); border-radius: 4px; overflow: hidden; }
-  .conf-bar .fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent), var(--green)); transition: width .4s; }
+.rnote{font-size:.76rem;color:var(--dim);text-align:center;line-height:1.5;margin-bottom:8px}
 
-  .rec-note {
-    font-size: .78rem; color: var(--dim); text-align: center;
-    line-height: 1.5; margin-bottom: 10px;
-  }
+/* Trend mini cards */
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.tcard{background:var(--card2);border-radius:12px;padding:10px 4px;text-align:center}
+.tcard .te{font-size:1.4rem}
+.tcard .tarrow{font-size:.9rem;font-weight:800}
+.tcard .tarrow.up{color:var(--green)}
+.tcard .tarrow.down{color:var(--accent2)}
+.tcard .tarrow.flat{color:var(--dim)}
+.tcard .tpct{font-size:.65rem;color:var(--dim);margin-top:1px}
 
-  /* -- Bet sizing -- */
-  .sizing-card { margin-top: 2px; }
-  .bankroll-row {
-    display: flex; align-items: center; gap: 6px;
-    justify-content: center; margin-bottom: 10px;
-  }
-  .bankroll-row label { font-size: .85rem; color: var(--dim); font-weight: 600; }
-  .bankroll-row input {
-    width: 100px; padding: 10px; border-radius: 12px;
-    background: rgba(0,0,0,.3); border: 1.5px solid rgba(255,255,255,.1);
-    color: var(--text); font-size: 1.1rem; font-weight: 700;
-    text-align: center; outline: none;
-  }
-  .bankroll-row input:focus { border-color: var(--accent); }
+/* Streak badges */
+.streak-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.streak-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:5px 12px;
+  border-radius:50px;font-size:.72rem;font-weight:700;
+}
+.streak-badge.hot{background:rgba(81,207,102,.12);color:var(--green);border:1px solid rgba(81,207,102,.2)}
+.streak-badge.cold{background:rgba(255,107,107,.1);color:var(--accent2);border:1px solid rgba(255,107,107,.2)}
 
-  .size-pills {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 8px;
-  }
-  .pill {
-    background: var(--card2); border-radius: 12px; padding: 10px 14px;
-    text-align: center; flex: 1; min-width: 80px;
-  }
-  .pill .amt { font-size: 1.15rem; font-weight: 800; color: var(--cyan); }
-  .pill .tag { font-size: .62rem; color: var(--dim); margin-top: 2px; text-transform: uppercase; font-weight: 600; letter-spacing: .3px; }
+/* Sizing */
+.brow{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px}
+.brow label{font-size:.82rem;color:var(--dim);font-weight:600}
+.brow input{
+  width:100px;padding:9px;border-radius:10px;background:rgba(0,0,0,.3);
+  border:1.5px solid rgba(255,255,255,.1);color:var(--text);font-size:1.05rem;
+  font-weight:700;text-align:center;outline:none;
+}
+.brow input:focus{border-color:var(--accent)}
+.spills{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.spill{background:var(--card2);border-radius:10px;padding:9px 10px;text-align:center;flex:1;min-width:70px}
+.spill .sa{font-size:1.1rem;font-weight:800;color:var(--cyan)}
+.spill .sl{font-size:.58rem;color:var(--dim);margin-top:1px;text-transform:uppercase;font-weight:600;letter-spacing:.2px}
 
-  .tip-box {
-    background: rgba(247,201,72,.06); border-left: 3px solid var(--accent);
-    padding: 10px 12px; border-radius: 0 12px 12px 0;
-    font-size: .78rem; color: var(--dim); line-height: 1.5;
-  }
+.tipbox{
+  background:rgba(247,201,72,.06);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 12px 12px 0;font-size:.76rem;color:var(--dim);line-height:1.5;
+}
 
-  /* ==================== PAGE 3: STATS ==================== */
+/* Dynamic advice tips */
+.advice-tips{margin-top:10px}
+.atip{
+  background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.atip .aticon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.atip .attext{font-size:.78rem;line-height:1.5;color:var(--text)}
+.atip .attext strong{color:var(--accent)}
 
-  /* Rank bars */
-  .rank-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
-  .rank-row .e { font-size: 1.5rem; width: 34px; text-align: center; }
-  .rank-row .bar-bg {
-    flex: 1; height: 26px; background: rgba(0,0,0,.25);
-    border-radius: 13px; overflow: hidden;
-  }
-  .rank-row .bar-fill {
-    height: 100%; border-radius: 13px; transition: width .35s;
-    display: flex; align-items: center; padding: 0 10px;
-    font-size: .72rem; font-weight: 800;
-  }
-  .rank-row .bar-fill.hot { background: var(--green); color: #0f0f1a; }
-  .rank-row .bar-fill.cold { background: var(--accent2); color: #fff; }
-  .rank-row .bar-fill.mid { background: #555; color: #ccc; }
-  .rank-row .pct { width: 50px; text-align: right; font-size: .82rem; font-weight: 700; }
+/* ===== STATS PAGE ===== */
+.qs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.qi{background:var(--card2);border-radius:12px;padding:12px 4px;text-align:center}
+.qi .qv{font-size:1.2rem;font-weight:800}
+.qi .ql{font-size:.58rem;color:var(--dim);margin-top:2px;text-transform:uppercase;font-weight:600}
 
-  /* Quick stats */
-  .qs {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 8px; margin-bottom: 12px;
-  }
-  .qs-item { background: var(--card2); border-radius: 12px; padding: 14px 6px; text-align: center; }
-  .qs-item .v { font-size: 1.3rem; font-weight: 800; }
-  .qs-item .l { font-size: .62rem; color: var(--dim); margin-top: 2px; text-transform: uppercase; font-weight: 600; }
+.rrow{display:flex;align-items:center;gap:7px;margin:6px 0}
+.rrow .re{font-size:1.4rem;width:30px;text-align:center}
+.rrow .rbg{flex:1;height:24px;background:rgba(0,0,0,.25);border-radius:12px;overflow:hidden}
+.rrow .rf{height:100%;border-radius:12px;transition:width .35s;display:flex;align-items:center;padding:0 8px;font-size:.68rem;font-weight:800}
+.rrow .rf.hot{background:var(--green);color:#0f0f1a}
+.rrow .rf.cold{background:var(--accent2);color:#fff}
+.rrow .rf.mid{background:#555;color:#ccc}
+.rrow .rp{width:48px;text-align:right;font-size:.8rem;font-weight:700}
 
-  /* ==================== PAGE 4: HISTORY ==================== */
-  .hist-item {
-    display: flex; align-items: center; padding: 10px 12px;
-    background: var(--card2); border-radius: 12px; margin-bottom: 8px;
-  }
-  .hist-item .num { color: var(--dim); font-weight: 700; font-size: .78rem; width: 36px; }
-  .hist-item .dice { flex: 1; text-align: center; font-size: 1.6rem; letter-spacing: 8px; }
-  .hist-item .del-btn {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,107,107,.1); border: none;
-    color: var(--accent2); font-size: .8rem; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .hist-item .del-btn:active { background: rgba(255,107,107,.25); }
+.dtable{width:100%;border-collapse:collapse;font-size:.75rem}
+.dtable th{padding:7px 4px;text-align:center;color:var(--accent);font-size:.6rem;text-transform:uppercase;letter-spacing:.3px}
+.dtable th:first-child{text-align:left}
+.dtable td{padding:8px 4px;text-align:center;border-bottom:1px solid rgba(255,255,255,.03)}
+.dtable td:first-child{text-align:left}
+.dtable .hot{color:var(--green);font-weight:700}
+.dtable .cold{color:var(--accent2);font-weight:700}
 
-  .clear-all-row { text-align: center; margin-bottom: 10px; }
-  .clear-all-btn {
-    background: none; border: 1.5px solid rgba(255,107,107,.2);
-    color: var(--accent2); font-size: .78rem; font-weight: 600;
-    padding: 8px 20px; border-radius: 50px; cursor: pointer;
-  }
-  .clear-all-btn:active { background: rgba(255,107,107,.1); }
-
-  /* ==================== DETAIL TABLE ==================== */
-  .dtable { width: 100%; border-collapse: collapse; font-size: .78rem; }
-  .dtable th {
-    padding: 8px 6px; text-align: center; color: var(--accent);
-    font-size: .65rem; text-transform: uppercase; letter-spacing: .3px;
-  }
-  .dtable th:first-child { text-align: left; }
-  .dtable td {
-    padding: 9px 6px; text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,.03);
-  }
-  .dtable td:first-child { text-align: left; }
-  .dtable .hot { color: var(--green); font-weight: 700; }
-  .dtable .cold { color: var(--accent2); font-weight: 700; }
+/* ===== HISTORY PAGE ===== */
+.hrow{display:flex;align-items:center;padding:9px 10px;background:var(--card2);border-radius:12px;margin-bottom:6px}
+.hrow .hn{color:var(--dim);font-weight:700;font-size:.75rem;width:34px}
+.hrow .hd{flex:1;text-align:center;font-size:1.5rem;letter-spacing:6px}
+.hrow .hdel{
+  width:30px;height:30px;border-radius:50%;background:rgba(255,107,107,.1);
+  border:none;color:var(--accent2);font-size:.75rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.hrow .hdel:active{background:rgba(255,107,107,.25)}
+.clr-row{text-align:center;margin-bottom:8px}
+.clr-btn{
+  background:none;border:1.5px solid rgba(255,107,107,.2);color:var(--accent2);
+  font-size:.75rem;font-weight:600;padding:7px 18px;border-radius:50px;cursor:pointer;
+}
+.clr-btn:active{background:rgba(255,107,107,.1)}
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="top-rec" id="topRec">
-      <span style="color:var(--dim)">Log dice rolls to get betting advice</span>
-    </div>
-  </div>
+  <div class="top-bar"><div class="top-rec" id="topRec"><span style="color:var(--dim)">Loading...</span></div></div>
 
-  <!-- PAGES -->
   <div class="page-area">
-    <!-- PAGE: LOG -->
+    <!-- LOG -->
     <div class="page active" id="pg-log">
       <div class="step-msg" id="stepMsg">Tap the symbol on Die 1</div>
-
       <div class="die-row">
-        <div class="die-box current" id="d0" onclick="clearSlot(0)">
-          <span class="die-label">Die 1</span>
-          <button class="x-btn" onclick="event.stopPropagation();clearSlot(0)">X</button>
-        </div>
-        <div class="die-box" id="d1" onclick="clearSlot(1)">
-          <span class="die-label">Die 2</span>
-          <button class="x-btn" onclick="event.stopPropagation();clearSlot(1)">X</button>
-        </div>
-        <div class="die-box" id="d2" onclick="clearSlot(2)">
-          <span class="die-label">Die 3</span>
-          <button class="x-btn" onclick="event.stopPropagation();clearSlot(2)">X</button>
-        </div>
+        <div class="dbox cur" id="d0" onclick="clearSlot(0)"><span class="dl">Die 1</span><button class="xb" onclick="event.stopPropagation();clearSlot(0)">X</button></div>
+        <div class="dbox" id="d1" onclick="clearSlot(1)"><span class="dl">Die 2</span><button class="xb" onclick="event.stopPropagation();clearSlot(1)">X</button></div>
+        <div class="dbox" id="d2" onclick="clearSlot(2)"><span class="dl">Die 3</span><button class="xb" onclick="event.stopPropagation();clearSlot(2)">X</button></div>
       </div>
-
-      <div class="picker-grid" id="picker"></div>
-
-      <button class="log-btn" id="logBtn" disabled onclick="logRoll()">Log This Roll</button>
-
-      <div class="clear-link">
-        <button onclick="clearSlots()">Clear dice</button>
+      <div class="pgrid" id="picker"></div>
+      <button class="logbtn" id="logBtn" disabled onclick="logRoll()">Log This Roll</button>
+      <div class="aux-row">
+        <button class="aux-btn" onclick="clearSlots()"><span class="ai">↺</span> Clear</button>
+        <button class="aux-btn" id="undoBtn" style="display:none" onclick="undoLast()"><span class="ai">↩</span> Undo Last</button>
+        <button class="aux-btn" id="repeatBtn" style="display:none" onclick="repeatLast()"><span class="ai">⟳</span> Repeat Last</button>
+      </div>
+      <div class="tip-card" id="liveTip">
+        <div class="tip-header">💡 Tip</div>
+        <div class="tip-text" id="liveTipText">Log your first roll to start getting live advice.</div>
       </div>
     </div>
 
-    <!-- PAGE: ADVICE -->
+    <!-- ADVICE -->
     <div class="page" id="pg-advice">
-      <div class="rec-hero" id="recHero">
-        <div class="empty">Log at least 2 rounds to see recommendations.</div>
+      <div class="rec-hero" id="recHero"><div class="empty">Loading advice...</div></div>
+      <div class="card" id="trendCard" style="display:none">
+        <div class="stitle">📈 Trends (last 10 vs overall)</div>
+        <div class="trend-grid" id="trendGrid"></div>
       </div>
-      <div class="card sizing-card">
-        <div class="section-title"><span class="ico">💰</span> Bet Sizing</div>
-        <div class="bankroll-row">
+      <div class="card" id="streakCard" style="display:none">
+        <div class="stitle">🔥 Active Streaks</div>
+        <div class="streak-row" id="streakRow"></div>
+      </div>
+      <div class="card">
+        <div class="stitle">💰 Bet Sizing</div>
+        <div class="brow">
           <label>Bankroll $</label>
-          <input type="number" id="bankrollIn" value="1000" min="0"
-            inputmode="numeric" oninput="updateRec()">
+          <input type="number" id="bankrollIn" value="1000" min="0" inputmode="numeric" oninput="updateRec()">
         </div>
-        <div class="size-pills" id="sizePills">
-          <div class="pill"><div class="amt">$20</div><div class="tag">Safe</div></div>
-          <div class="pill"><div class="amt">$50</div><div class="tag">Medium</div></div>
-          <div class="pill"><div class="amt">$100</div><div class="tag">Bold</div></div>
-        </div>
-        <div class="tip-box">Bet on the top 1-2 picks. If you're ahead, pocket your profit and play with winnings only.</div>
+        <div class="spills" id="sizePills"></div>
+        <div class="tipbox">Bet on the #1 or #2 pick. If you're up, pocket your profit.</div>
+      </div>
+      <div class="card">
+        <div class="stitle">🧠 Smart Tips</div>
+        <div class="advice-tips" id="adviceTips"></div>
       </div>
     </div>
 
-    <!-- PAGE: STATS -->
+    <!-- STATS -->
     <div class="page" id="pg-stats">
       <div class="qs" id="qStats">
-        <div class="qs-item"><div class="v" id="qR">0</div><div class="l">Rounds</div></div>
-        <div class="qs-item"><div class="v" id="qH">--</div><div class="l">Hottest</div></div>
-        <div class="qs-item"><div class="v" id="qC">--</div><div class="l">Coldest</div></div>
+        <div class="qi"><div class="qv" id="qR">0</div><div class="ql">Rounds</div></div>
+        <div class="qi"><div class="qv" id="qH">--</div><div class="ql">Hottest</div></div>
+        <div class="qi"><div class="qv" id="qC">--</div><div class="ql">Coldest</div></div>
+        <div class="qi"><div class="qv" id="qD">0</div><div class="ql">Total Dice</div></div>
+        <div class="qi"><div class="qv" id="qB">--</div><div class="ql">Best Streak</div></div>
+        <div class="qi"><div class="qv" id="qW">--</div><div class="ql">Worst Streak</div></div>
       </div>
-      <div class="card">
-        <div class="section-title"><span class="ico">📊</span> Symbol Rankings</div>
-        <div id="rankArea"><div class="empty">Log some rounds first.</div></div>
-      </div>
-      <div class="card">
-        <div class="section-title"><span class="ico">📋</span> Frequency Table</div>
-        <div id="tableArea"><div class="empty">No data yet.</div></div>
-      </div>
+      <div class="card"><div class="stitle">📊 Symbol Rankings</div><div id="rankArea"><div class="empty">No data.</div></div></div>
+      <div class="card"><div class="stitle">📋 Frequency Table</div><div id="tableArea"><div class="empty">No data.</div></div></div>
     </div>
 
-    <!-- PAGE: HISTORY -->
+    <!-- HISTORY -->
     <div class="page" id="pg-hist">
-      <div class="clear-all-row" id="clearRow" style="display:none">
-        <button class="clear-all-btn" onclick="clearHistory()">Clear All History</button>
-      </div>
-      <div id="histList"><div class="empty">No rolls logged yet.<br>Go to the Log tab to get started.</div></div>
+      <div class="clr-row" id="clrRow" style="display:none"><button class="clr-btn" onclick="clearHistory()">Clear All History</button></div>
+      <div id="histList"><div class="empty">No rolls logged yet.</div></div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <button class="nav-btn active" onclick="goPage('log',this)">
-      <span class="ico">🎲</span><span class="txt">Log</span>
-    </button>
-    <button class="nav-btn" onclick="goPage('advice',this)">
-      <span class="ico">🎯</span><span class="txt">Advice</span>
-    </button>
-    <button class="nav-btn" onclick="goPage('stats',this)">
-      <span class="ico">📊</span><span class="txt">Stats</span>
-    </button>
-    <button class="nav-btn" onclick="goPage('hist',this)">
-      <span class="ico">📋</span><span class="txt">History</span>
-    </button>
+  <div class="bnav">
+    <button class="nb on" onclick="goPage('log',this)"><span class="ni">🎲</span><span class="nt">Log</span></button>
+    <button class="nb" onclick="goPage('advice',this)"><span class="ni">🎯</span><span class="nt">Advice</span></button>
+    <button class="nb" onclick="goPage('stats',this)"><span class="ni">📊</span><span class="nt">Stats</span></button>
+    <button class="nb" onclick="goPage('hist',this)"><span class="ni">📋</span><span class="nt">History</span></button>
   </div>
-
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 </div>
 
 <script>
-// ==================== DATA ====================
-const SYM = [
-  { id:'gourd',   n:'Gourd',   vi:'Bầu', e:'🍐' },
-  { id:'crab',    n:'Crab',    vi:'Cua',  e:'🦀' },
-  { id:'fish',    n:'Fish',    vi:'Cá',   e:'🐟' },
-  { id:'rooster', n:'Rooster', vi:'Gà',   e:'🐓' },
-  { id:'shrimp',  n:'Shrimp',  vi:'Tôm',  e:'🦐' },
-  { id:'deer',    n:'Deer',    vi:'Nai',  e:'🦌' },
+const SYM=[
+  {id:'gourd',n:'Gourd',vi:'Bầu',e:'🍐'},
+  {id:'crab',n:'Crab',vi:'Cua',e:'🦀'},
+  {id:'fish',n:'Fish',vi:'Cá',e:'🐟'},
+  {id:'rooster',n:'Rooster',vi:'Gà',e:'🐓'},
+  {id:'shrimp',n:'Shrimp',vi:'Tôm',e:'🦐'},
+  {id:'deer',n:'Deer',vi:'Nai',e:'🦌'},
 ];
-const MAP = {}; SYM.forEach(s => MAP[s.id] = s);
+const MAP={};SYM.forEach(s=>MAP[s.id]=s);
+const E2ID={'🍐':'gourd','🦀':'crab','🐟':'fish','🐓':'rooster','🦐':'shrimp','🦌':'deer'};
 
-let slots = [null, null, null];
-let cur = 0;
-let hist = JSON.parse(localStorage.getItem('bc2') || '[]');
-function save() { localStorage.setItem('bc2', JSON.stringify(hist)); }
+const SEED_DATA = [
+  ['deer','rooster','gourd'],['rooster','fish','shrimp'],['fish','gourd','shrimp'],
+  ['rooster','crab','shrimp'],['rooster','crab','crab'],['deer','deer','gourd'],
+  ['deer','gourd','crab'],['gourd','shrimp','shrimp'],['shrimp','shrimp','rooster'],
+  ['crab','shrimp','deer'],['gourd','deer','fish'],['rooster','crab','shrimp'],
+  ['shrimp','deer','fish'],['fish','fish','gourd'],['shrimp','gourd','rooster'],
+  ['gourd','gourd','deer'],['rooster','rooster','deer'],['deer','crab','rooster'],
+  ['gourd','rooster','shrimp'],['crab','gourd','shrimp'],['shrimp','gourd','deer'],
+  ['gourd','fish','rooster'],['gourd','rooster','fish'],['crab','crab','rooster'],
+  ['crab','rooster','shrimp'],['gourd','deer','rooster'],['deer','shrimp','fish'],
+  ['crab','crab','shrimp'],['shrimp','crab','rooster'],['crab','rooster','deer'],
+  ['gourd','crab','rooster'],['rooster','crab','fish'],['rooster','crab','gourd'],
+  ['shrimp','fish','gourd']
+];
 
-// ==================== NAV ====================
-function goPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('pg-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+let slots=[null,null,null], cur=0;
+let hist=JSON.parse(localStorage.getItem('bc3')||'null');
+
+if(!hist||!hist.length){
+  hist=SEED_DATA.map((d,i)=>({r:i+1,d,t:Date.now()-((SEED_DATA.length-i)*60000)}));
+  localStorage.setItem('bc3',JSON.stringify(hist));
+}
+function save(){localStorage.setItem('bc3',JSON.stringify(hist))}
+
+// ===== NAV =====
+function goPage(n,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+n).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
   refreshAll();
 }
 
-// ==================== PICKER ====================
-function renderPicker() {
-  document.getElementById('picker').innerHTML = SYM.map(s => `
-    <div class="sym-btn" ontouchstart="" onclick="pick('${s.id}')">
-      <span class="e">${s.e}</span>
-      <span class="n">${s.n}</span>
-      <span class="v">${s.vi}</span>
-    </div>
-  `).join('');
+// ===== PICKER =====
+function renderPicker(){
+  document.getElementById('picker').innerHTML=SYM.map(s=>`
+    <div class="sbtn" ontouchstart="" onclick="pick('${s.id}')">
+      <span class="se">${s.e}</span><span class="sn">${s.n}</span><span class="sv">${s.vi}</span>
+    </div>`).join('');
 }
 
-// ==================== PICK / CLEAR ====================
-function pick(id) {
-  if (cur > 2) {
-    let empty = slots.indexOf(null);
-    if (empty === -1) return;
-    cur = empty;
-  }
-  slots[cur] = id;
-  cur++;
-  while (cur <= 2 && slots[cur] !== null) cur++;
-  if (cur > 2) {
-    let empty = slots.indexOf(null);
-    cur = empty === -1 ? 3 : empty;
-  }
+function pick(id){
+  if(cur>2){let e=slots.indexOf(null);if(e===-1)return;cur=e;}
+  slots[cur]=id;cur++;
+  while(cur<=2&&slots[cur]!==null)cur++;
+  if(cur>2){let e=slots.indexOf(null);cur=e===-1?3:e;}
   syncUI();
 }
+function clearSlot(i){if(slots[i]===null)return;slots[i]=null;cur=i;syncUI();}
+function clearSlots(){slots=[null,null,null];cur=0;syncUI();}
 
-function clearSlot(i) {
-  if (slots[i] === null) return;
-  slots[i] = null;
-  cur = i;
-  syncUI();
-}
-
-function clearSlots() {
-  slots = [null, null, null];
-  cur = 0;
-  syncUI();
-}
-
-function syncUI() {
-  const allDone = slots.every(s => s !== null);
-  const msg = document.getElementById('stepMsg');
-  const btn = document.getElementById('logBtn');
-
-  for (let i = 0; i < 3; i++) {
-    const el = document.getElementById('d' + i);
-    el.classList.remove('filled', 'current');
-    if (slots[i] !== null) {
+function syncUI(){
+  const allDone=slots.every(s=>s!==null);
+  for(let i=0;i<3;i++){
+    const el=document.getElementById('d'+i);
+    el.classList.remove('filled','cur');
+    const lbl=el.querySelector('.dl');
+    const txt=el.childNodes[0];
+    if(slots[i]!==null){
       el.classList.add('filled');
-      el.querySelector('.die-label').style.display = 'none';
-      el.childNodes[0].nodeType === 3
-        ? el.firstChild.textContent = MAP[slots[i]].e
-        : el.insertBefore(document.createTextNode(MAP[slots[i]].e), el.firstChild);
+      lbl.style.display='none';
+      if(txt&&txt.nodeType===3)txt.textContent=MAP[slots[i]].e;
+      else el.insertBefore(document.createTextNode(MAP[slots[i]].e),el.firstChild);
     } else {
-      el.querySelector('.die-label').style.display = '';
-      if (el.childNodes[0] && el.childNodes[0].nodeType === 3) el.childNodes[0].textContent = '';
+      lbl.style.display='';
+      if(txt&&txt.nodeType===3)txt.textContent='';
     }
-    if (i === cur && !allDone) el.classList.add('current');
+    if(i===cur&&!allDone)el.classList.add('cur');
   }
-
-  if (allDone) {
-    msg.textContent = 'All set! Tap "Log This Roll"';
-    msg.className = 'step-msg done';
-    btn.disabled = false;
-  } else {
-    const nextEmpty = slots.indexOf(null) + 1;
-    msg.textContent = `Tap the symbol on Die ${nextEmpty}`;
-    msg.className = 'step-msg';
-    btn.disabled = true;
-  }
+  const msg=document.getElementById('stepMsg'),btn=document.getElementById('logBtn');
+  if(allDone){msg.textContent='All set! Tap "Log This Roll"';msg.className='step-msg ok';btn.disabled=false;}
+  else{msg.textContent='Tap the symbol on Die '+(slots.indexOf(null)+1);msg.className='step-msg';btn.disabled=true;}
 }
 
-// ==================== LOG / DELETE ====================
-function logRoll() {
-  if (slots.some(s => s === null)) return;
-  hist.push({ r: hist.length + 1, d: [...slots], t: Date.now() });
-  save();
-  showToast('Round ' + hist.length + ' logged  ' + slots.map(s => MAP[s].e).join(' '));
-  clearSlots();
-  refreshAll();
+// ===== LOG / UNDO / REPEAT =====
+function logRoll(){
+  if(slots.some(s=>s===null))return;
+  hist.push({r:hist.length+1,d:[...slots],t:Date.now()});
+  save();showToast('Round '+hist.length+' logged  '+slots.map(s=>MAP[s].e).join(' '));
+  clearSlots();refreshAll();
 }
-
-function delRoll(i) {
-  hist.splice(i, 1);
-  hist.forEach((h, idx) => h.r = idx + 1);
-  save(); refreshAll();
+function undoLast(){
+  if(!hist.length)return;
+  const removed=hist.pop();
+  save();showToast('Undid round '+(hist.length+1));refreshAll();
 }
-
-function clearHistory() {
-  if (!hist.length) return;
-  if (!confirm('Clear all history?')) return;
-  hist = []; save(); refreshAll();
+function repeatLast(){
+  if(!hist.length)return;
+  const last=hist[hist.length-1];
+  slots=[...last.d];cur=3;syncUI();
 }
+function delRoll(i){hist.splice(i,1);hist.forEach((h,idx)=>h.r=idx+1);save();refreshAll();}
+function clearHistory(){if(!hist.length)return;if(!confirm('Clear all history?'))return;hist=[];save();refreshAll();}
+function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
 
-function showToast(txt) {
-  const t = document.getElementById('toast');
-  t.textContent = txt;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
-}
-
-// ==================== ANALYSIS ====================
-function analyze() {
-  const freq = {}, recent = {};
-  SYM.forEach(s => { freq[s.id] = 0; recent[s.id] = 0; });
-  const total = hist.length * 3;
-  hist.forEach((h, i) => {
-    h.d.forEach(d => {
+// ===== ANALYSIS =====
+function analyze(){
+  const freq={},recent={},last5={};
+  SYM.forEach(s=>{freq[s.id]=0;recent[s.id]=0;last5[s.id]=0;});
+  const total=hist.length*3;
+  hist.forEach((h,i)=>{
+    h.d.forEach(d=>{
       freq[d]++;
-      if (i >= hist.length - 10) recent[d]++;
+      if(i>=hist.length-10)recent[d]++;
+      if(i>=hist.length-5)last5[d]++;
     });
   });
-  return { freq, recent, total, rounds: hist.length };
+  return{freq,recent,last5,total,rounds:hist.length};
 }
 
-function getScores() {
-  const { freq, recent, total, rounds } = analyze();
-  if (rounds < 2) return null;
-  const exp = total / 6;
-  const rT = Math.min(rounds, 10) * 3;
-  const rE = rT / 6;
-  return SYM.map(s => {
-    const f = freq[s.id], r = recent[s.id];
-    const dev = (f - exp) / Math.max(1, Math.sqrt(exp));
-    const rd = (r - rE) / Math.max(1, Math.sqrt(rE));
-    return { ...s, f, r, pct: f/total*100, rpct: r/rT*100, dev, rd, hot: rd*.6 + dev*.4 };
-  }).sort((a,b) => b.hot - a.hot);
+function getScores(){
+  const{freq,recent,last5,total,rounds}=analyze();
+  if(rounds<2)return null;
+  const exp=total/6, rT=Math.min(rounds,10)*3, rE=rT/6;
+  const l5T=Math.min(rounds,5)*3, l5E=l5T/6;
+  return SYM.map(s=>{
+    const f=freq[s.id],r=recent[s.id],l=last5[s.id];
+    const dev=(f-exp)/Math.max(1,Math.sqrt(exp));
+    const rd=(r-rE)/Math.max(1,Math.sqrt(rE));
+    const ld=(l-l5E)/Math.max(1,Math.sqrt(l5E));
+    return{...s,f,r,l,pct:f/total*100,rpct:r/rT*100,lpct:l/l5T*100,dev,rd,ld,hot:rd*.5+dev*.3+ld*.2};
+  }).sort((a,b)=>b.hot-a.hot);
 }
 
-// ==================== UPDATE REC ====================
-function updateRec() {
-  const sc = getScores();
-  const topEl = document.getElementById('topRec');
-  const heroEl = document.getElementById('recHero');
-  const bank = parseInt(document.getElementById('bankrollIn').value) || 0;
+function getStreaks(){
+  const current={},best={};
+  SYM.forEach(s=>{current[s.id]=0;best[s.id]=0;});
+  for(let i=hist.length-1;i>=0;i--){
+    const has=new Set(hist[i].d);
+    let anyBroke=false;
+    SYM.forEach(s=>{
+      if(!anyBroke||current[s.id]>0){
+        if(has.has(s.id)){current[s.id]++;if(current[s.id]>best[s.id])best[s.id]=current[s.id];}
+      }
+    });
+  }
+  // Recompute: current = consecutive rounds from latest where symbol appeared
+  const cur2={},cold={};
+  SYM.forEach(s=>{cur2[s.id]=0;cold[s.id]=0;});
+  for(let i=hist.length-1;i>=0;i--){
+    const has=new Set(hist[i].d);
+    SYM.forEach(s=>{
+      if(cur2[s.id]!==-1){if(has.has(s.id))cur2[s.id]++;else cur2[s.id]=-1;}
+      if(cold[s.id]!==-1){if(!has.has(s.id))cold[s.id]++;else cold[s.id]=-1;}
+    });
+  }
+  // Best streaks ever
+  const bestEver={};
+  SYM.forEach(s=>{
+    let streak=0,mx=0;
+    hist.forEach(h=>{if(h.d.includes(s.id)){streak++;if(streak>mx)mx=streak;}else streak=0;});
+    bestEver[s.id]=mx;
+  });
+  return{cur:cur2,cold,bestEver};
+}
+
+// ===== DYNAMIC TIPS =====
+function generateTips(){
+  const sc=getScores();
+  if(!sc)return[];
+  const{rounds}=analyze();
+  const streaks=getStreaks();
+  const tips=[];
+
+  // Hot symbol tip
+  const hottest=sc[0];
+  if(hottest.hot>0.3)
+    tips.push({icon:'🔥',text:`<strong>${hottest.n}</strong> is the hottest symbol — appeared ${hottest.rpct.toFixed(0)}% in the last 10 rounds (expected ~17%). Consider betting on it.`});
+
+  // Cold symbol warning
+  const coldest=sc[5];
+  if(coldest.hot<-0.3)
+    tips.push({icon:'🧊',text:`<strong>${coldest.n}</strong> is running cold at ${coldest.rpct.toFixed(0)}% recently. Avoid unless you see it starting to come back.`});
+
+  // Streak alerts
+  SYM.forEach(s=>{
+    if(streaks.cur[s.id]>=4)
+      tips.push({icon:'⚡',text:`<strong>${s.n}</strong> has appeared in ${streaks.cur[s.id]} consecutive rounds! Hot streak active.`});
+    if(streaks.cold[s.id]>=4)
+      tips.push({icon:'💤',text:`<strong>${s.n}</strong> hasn't appeared in ${streaks.cold[s.id]} straight rounds. Don't fall for the gambler's fallacy — a "due" symbol isn't more likely.`});
+  });
+
+  // Data quality
+  if(rounds<10)
+    tips.push({icon:'📊',text:`You've logged <strong>${rounds}</strong> rounds. Aim for 20+ for reliable patterns. Small sample = noisy data.`});
+  else if(rounds>=20&&rounds<30)
+    tips.push({icon:'📊',text:`<strong>${rounds} rounds</strong> tracked. Your data is getting solid. Patterns are becoming reliable.`});
+  else if(rounds>=30)
+    tips.push({icon:'✅',text:`<strong>${rounds} rounds</strong> logged — strong sample size! Your recommendations are well-informed.`});
+
+  // Even spread warning
+  const spread=Math.abs(sc[0].hot-sc[5].hot);
+  if(spread<0.4)
+    tips.push({icon:'⚖️',text:'All symbols are showing fairly even frequencies. No strong edge right now — bet conservatively or wait.'});
+
+  // Bankroll tip
+  tips.push({icon:'💡',text:'If you\'re up from your starting bankroll, pocket your profits and only play with winnings. That way you can\'t lose money overall.'});
+
+  // Variance reminder
+  if(rounds>15)
+    tips.push({icon:'🎲',text:'Remember: fewer rounds with bigger bets gives you better odds than many small-bet rounds. The house edge adds up over time.'});
+
+  return tips;
+}
+
+function getLiveTip(){
+  const sc=getScores();
+  if(!sc)return'Log your first roll to start getting live advice.';
+  const hot=sc[0],cold=sc[5];
+  const{rounds}=analyze();
+  const streaks=getStreaks();
+
+  const msgs=[];
+  if(hot.hot>0.5)msgs.push(`${hot.e} <strong>${hot.n}</strong> is on fire! Consider betting on it.`);
+  SYM.forEach(s=>{if(streaks.cur[s.id]>=3)msgs.push(`${MAP[s.id].e} ${s.n} hit ${streaks.cur[s.id]}x in a row!`);});
+  if(rounds<8)msgs.push(`Only ${rounds} rounds tracked. Log more for better advice.`);
+  if(msgs.length===0)msgs.push(`${hot.e} <strong>${hot.n}</strong> and ${sc[1].e} <strong>${sc[1].n}</strong> are your best bets right now.`);
+  return msgs[Math.floor(Math.random()*msgs.length)];
+}
+
+// ===== UPDATE REC =====
+function updateRec(){
+  const sc=getScores();
+  const topEl=document.getElementById('topRec');
+  const heroEl=document.getElementById('recHero');
+  const bank=parseInt(document.getElementById('bankrollIn').value)||0;
 
   // Sizing
-  if (bank > 0) {
-    const c = Math.max(1, Math.floor(bank * 0.02));
-    const m = Math.max(1, Math.floor(bank * 0.05));
-    const a = Math.max(1, Math.floor(bank * 0.10));
-    document.getElementById('sizePills').innerHTML = `
-      <div class="pill"><div class="amt">$${c}</div><div class="tag">Safe (2%)</div></div>
-      <div class="pill"><div class="amt">$${m}</div><div class="tag">Medium (5%)</div></div>
-      <div class="pill"><div class="amt">$${a}</div><div class="tag">Bold (10%)</div></div>`;
+  if(bank>0){
+    const c=Math.max(1,Math.floor(bank*.02)),m=Math.max(1,Math.floor(bank*.05)),a=Math.max(1,Math.floor(bank*.1));
+    document.getElementById('sizePills').innerHTML=`
+      <div class="spill"><div class="sa">$${c}</div><div class="sl">Safe 2%</div></div>
+      <div class="spill"><div class="sa">$${m}</div><div class="sl">Med 5%</div></div>
+      <div class="spill"><div class="sa">$${a}</div><div class="sl">Bold 10%</div></div>`;
   }
 
-  if (!sc) {
-    topEl.innerHTML = `<span style="color:var(--dim)">Log ${2 - hist.length} more round${hist.length < 1 ? 's' : ''} for advice</span>`;
-    heroEl.innerHTML = '<div class="empty">Log at least 2 rounds to see recommendations.</div>';
+  // Undo / repeat buttons
+  document.getElementById('undoBtn').style.display=hist.length?'':'none';
+  document.getElementById('repeatBtn').style.display=hist.length?'':'none';
+
+  // Live tip
+  document.getElementById('liveTipText').innerHTML=getLiveTip();
+
+  if(!sc){
+    topEl.innerHTML=`<span style="color:var(--dim)">Log ${Math.max(0,2-hist.length)} more rounds for advice</span>`;
+    heroEl.innerHTML='<div class="empty">Log at least 2 rounds to see recommendations.</div>';
     return;
   }
 
-  const top2 = sc.slice(0, 2);
-  const conf = Math.min(100, Math.round((hist.length / 30) * 50 + Math.abs(sc[0].hot - sc[5].hot) * 10));
+  const top2=sc.slice(0,2);
+  const conf=Math.min(100,Math.round((hist.length/30)*50+Math.abs(sc[0].hot-sc[5].hot)*10));
 
-  // Top bar compact
-  topEl.innerHTML = `
-    <div style="font-size:.68rem; color:var(--dim); margin-bottom:3px;">BET ON:</div>
+  topEl.innerHTML=`
+    <div style="font-size:.65rem;color:var(--dim);margin-bottom:2px">BET ON:</div>
     <div class="picks">
-      <span class="chip"><span class="e">${top2[0].e}</span> ${top2[0].n}</span>
-      <span class="chip s"><span class="e">${top2[1].e}</span> ${top2[1].n}</span>
+      <span class="chip"><span class="ce">${top2[0].e}</span> ${top2[0].n}</span>
+      <span class="chip s2"><span class="ce">${top2[1].e}</span> ${top2[1].n}</span>
     </div>
-    <div class="sub">${conf}% confidence &middot; ${hist.length} rounds tracked</div>`;
+    <div class="sub">${conf}% confidence · ${hist.length} rounds</div>`;
 
-  // Full advice page
-  heroEl.innerHTML = `
-    <div class="heading">Recommended Bets</div>
-    <div class="big-picks">
-      <div class="pick-card">
-        <span class="e">${top2[0].e}</span>
-        <div class="n">${top2[0].n}</div>
-        <span class="badge b1">#1 PICK</span>
-      </div>
-      <div class="pick-card second">
-        <span class="e">${top2[1].e}</span>
-        <div class="n">${top2[1].n}</div>
-        <span class="badge b2">#2 PICK</span>
-      </div>
+  heroEl.innerHTML=`
+    <div class="rh">Recommended Bets</div>
+    <div class="bp">
+      <div class="pcard"><span class="pe">${top2[0].e}</span><div class="pn">${top2[0].n}</div><span class="pb b1">#1 PICK · ${top2[0].rpct.toFixed(0)}% recent</span></div>
+      <div class="pcard p2"><span class="pe">${top2[1].e}</span><div class="pn">${top2[1].n}</div><span class="pb b2">#2 PICK · ${top2[1].rpct.toFixed(0)}% recent</span></div>
     </div>
-    <div class="conf-bar">
-      <div class="lbl">Confidence: ${conf}% &middot; ${hist.length} rounds tracked</div>
-      <div class="track"><div class="fill" style="width:${conf}%"></div></div>
-    </div>
-    <div class="rec-note">
-      ${top2[0].n} appeared ${top2[0].rpct.toFixed(0)}% in last 10 rounds (expected 17%).
-      ${top2[0].hot > 0.5 ? 'Running HOT!' : 'Slight edge detected.'}
-      Log more rounds for better accuracy.
-    </div>`;
-}
+    <div class="cbar"><div class="cl">Confidence: ${conf}% · ${hist.length} rounds</div><div class="ct"><div class="cf" style="width:${conf}%"></div></div></div>
+    <div class="rnote">${top2[0].n} at ${top2[0].rpct.toFixed(0)}% recently (expected 17%). ${top2[0].hot>0.5?'Running HOT!':'Slight edge.'} More rounds = better accuracy.</div>`;
 
-// ==================== RANKINGS ====================
-function renderRanks() {
-  const area = document.getElementById('rankArea');
-  const { freq, total } = analyze();
-  if (!total) { area.innerHTML = '<div class="empty">Log some rounds first.</div>'; return; }
-  const exp = 100/6;
-  const items = SYM.map(s => ({ ...s, c:freq[s.id], p:freq[s.id]/total*100 })).sort((a,b) => b.p - a.p);
-  const mx = Math.max(...items.map(i => i.p), exp + 5);
-  area.innerHTML = items.map(s => {
-    const d = s.p - exp;
-    const cls = d > 2 ? 'hot' : d < -2 ? 'cold' : 'mid';
-    const clr = cls==='hot' ? 'var(--green)' : cls==='cold' ? 'var(--accent2)' : 'var(--dim)';
-    return `<div class="rank-row">
-      <span class="e">${s.e}</span>
-      <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${(s.p/mx)*100}%">${s.c}x</div></div>
-      <span class="pct" style="color:${clr}">${s.p.toFixed(1)}%</span>
-    </div>`;
-  }).join('');
-}
+  // Trends
+  const{freq,total,rounds}=analyze();
+  if(rounds>=5){
+    document.getElementById('trendCard').style.display='';
+    const rT=Math.min(rounds,10)*3;
+    document.getElementById('trendGrid').innerHTML=SYM.map(s=>{
+      const overall=freq[s.id]/total*100;
+      const rec=sc.find(x=>x.id===s.id).rpct;
+      const diff=rec-overall;
+      const arrow=diff>3?'↑':diff<-3?'↓':'→';
+      const cls=diff>3?'up':diff<-3?'down':'flat';
+      return`<div class="tcard"><div class="te">${s.e}</div><div class="tarrow ${cls}">${arrow}</div><div class="tpct">${rec.toFixed(0)}% recent</div></div>`;
+    }).join('');
+  }
 
-// ==================== STATS ====================
-function renderStats() {
-  const { freq, total, rounds } = analyze();
-  document.getElementById('qR').textContent = rounds;
-  if (total > 0) {
-    const sorted = SYM.slice().sort((a,b) => freq[b.id] - freq[a.id]);
-    document.getElementById('qH').textContent = sorted[0].e;
-    document.getElementById('qC').textContent = sorted[5].e;
+  // Streaks
+  const streaks=getStreaks();
+  const activeBadges=[];
+  SYM.forEach(s=>{
+    if(streaks.cur[s.id]>=3)activeBadges.push(`<span class="streak-badge hot">${s.e} ${streaks.cur[s.id]}x hot</span>`);
+    if(streaks.cold[s.id]>=3)activeBadges.push(`<span class="streak-badge cold">${s.e} ${streaks.cold[s.id]}x cold</span>`);
+  });
+  if(activeBadges.length){
+    document.getElementById('streakCard').style.display='';
+    document.getElementById('streakRow').innerHTML=activeBadges.join('');
   } else {
-    document.getElementById('qH').textContent = '--';
-    document.getElementById('qC').textContent = '--';
+    document.getElementById('streakCard').style.display='none';
   }
+
+  // Dynamic advice tips
+  const tips=generateTips();
+  document.getElementById('adviceTips').innerHTML=tips.slice(0,5).map(t=>`
+    <div class="atip"><span class="aticon">${t.icon}</span><div class="attext">${t.text}</div></div>`).join('');
 }
 
-// ==================== TABLE ====================
-function renderTable() {
-  const area = document.getElementById('tableArea');
-  const { freq, recent, total, rounds } = analyze();
-  if (!total) { area.innerHTML = '<div class="empty">No data yet.</div>'; return; }
-  const rT = Math.min(rounds, 10) * 3;
-  area.innerHTML = `<table class="dtable">
-    <tr><th style="text-align:left">Symbol</th><th>Hits</th><th>%</th><th>Last 10</th><th>vs Exp</th></tr>
-    ${SYM.map(s => {
-      const f=freq[s.id], r=recent[s.id];
-      const p=f/total*100, rp=rT?r/rT*100:0, d=p-100/6;
-      const c = d>2?'hot':d<-2?'cold':'';
-      return `<tr><td>${s.e} ${s.n}</td><td>${f}</td><td class="${c}">${p.toFixed(1)}%</td>
-        <td>${rp.toFixed(1)}%</td><td class="${c}">${d>=0?'+':''}${d.toFixed(1)}%</td></tr>`;
-    }).join('')}
-  </table>`;
-}
-
-// ==================== HISTORY ====================
-function renderHist() {
-  const el = document.getElementById('histList');
-  const cr = document.getElementById('clearRow');
-  if (!hist.length) {
-    el.innerHTML = '<div class="empty">No rolls logged yet.<br>Go to the Log tab to get started.</div>';
-    cr.style.display = 'none';
-    return;
-  }
-  cr.style.display = '';
-  el.innerHTML = [...hist].reverse().map((h, ri) => {
-    const idx = hist.length - 1 - ri;
-    return `<div class="hist-item">
-      <span class="num">#${h.r}</span>
-      <span class="dice">${h.d.map(d => MAP[d].e).join('')}</span>
-      <button class="del-btn" onclick="delRoll(${idx})">X</button>
-    </div>`;
+// ===== RANKS =====
+function renderRanks(){
+  const area=document.getElementById('rankArea');
+  const{freq,total}=analyze();
+  if(!total){area.innerHTML='<div class="empty">No data.</div>';return;}
+  const exp=100/6;
+  const items=SYM.map(s=>({...s,c:freq[s.id],p:freq[s.id]/total*100})).sort((a,b)=>b.p-a.p);
+  const mx=Math.max(...items.map(i=>i.p),exp+5);
+  area.innerHTML=items.map(s=>{
+    const d=s.p-exp,cls=d>2?'hot':d<-2?'cold':'mid',clr=cls==='hot'?'var(--green)':cls==='cold'?'var(--accent2)':'var(--dim)';
+    return`<div class="rrow"><span class="re">${s.e}</span><div class="rbg"><div class="rf ${cls}" style="width:${(s.p/mx)*100}%">${s.c}x</div></div><span class="rp" style="color:${clr}">${s.p.toFixed(1)}%</span></div>`;
   }).join('');
 }
 
-// ==================== REFRESH ====================
-function refreshAll() {
-  updateRec();
-  renderRanks();
-  renderStats();
-  renderTable();
-  renderHist();
+// ===== STATS =====
+function renderStats(){
+  const{freq,total,rounds}=analyze();
+  document.getElementById('qR').textContent=rounds;
+  document.getElementById('qD').textContent=total;
+  if(total>0){
+    const sorted=SYM.slice().sort((a,b)=>freq[b.id]-freq[a.id]);
+    document.getElementById('qH').textContent=sorted[0].e;
+    document.getElementById('qC').textContent=sorted[5].e;
+    const streaks=getStreaks();
+    let bestSym=null,bestLen=0,worstSym=null,worstLen=0;
+    SYM.forEach(s=>{
+      if(streaks.bestEver[s.id]>bestLen){bestLen=streaks.bestEver[s.id];bestSym=s;}
+      if(streaks.cold[s.id]>worstLen){worstLen=Math.abs(streaks.cold[s.id]);worstSym=s;}
+    });
+    document.getElementById('qB').textContent=bestSym?bestSym.e+' ×'+bestLen:'--';
+    document.getElementById('qW').textContent=worstSym&&worstLen>0?worstSym.e+' ×'+worstLen:'--';
+  } else {
+    document.getElementById('qH').textContent='--';
+    document.getElementById('qC').textContent='--';
+    document.getElementById('qB').textContent='--';
+    document.getElementById('qW').textContent='--';
+  }
 }
 
-// ==================== INIT ====================
-renderPicker();
-syncUI();
-refreshAll();
+// ===== TABLE =====
+function renderTable(){
+  const area=document.getElementById('tableArea');
+  const{freq,recent,total,rounds}=analyze();
+  if(!total){area.innerHTML='<div class="empty">No data.</div>';return;}
+  const rT=Math.min(rounds,10)*3;
+  area.innerHTML=`<table class="dtable">
+    <tr><th style="text-align:left">Symbol</th><th>Hits</th><th>%</th><th>Last 10</th><th>vs Exp</th></tr>
+    ${SYM.map(s=>{
+      const f=freq[s.id],r=recent[s.id],p=f/total*100,rp=rT?r/rT*100:0,d=p-100/6;
+      const c=d>2?'hot':d<-2?'cold':'';
+      return`<tr><td>${s.e} ${s.n}</td><td>${f}</td><td class="${c}">${p.toFixed(1)}%</td><td>${rp.toFixed(1)}%</td><td class="${c}">${d>=0?'+':''}${d.toFixed(1)}%</td></tr>`;
+    }).join('')}</table>`;
+}
+
+// ===== HISTORY =====
+function renderHist(){
+  const el=document.getElementById('histList'),cr=document.getElementById('clrRow');
+  if(!hist.length){el.innerHTML='<div class="empty">No rolls logged yet.</div>';cr.style.display='none';return;}
+  cr.style.display='';
+  el.innerHTML=[...hist].reverse().map((h,ri)=>{
+    const idx=hist.length-1-ri;
+    return`<div class="hrow"><span class="hn">#${h.r}</span><span class="hd">${h.d.map(d=>MAP[d].e).join('')}</span><button class="hdel" onclick="delRoll(${idx})">X</button></div>`;
+  }).join('');
+}
+
+// ===== REFRESH =====
+function refreshAll(){updateRec();renderRanks();renderStats();renderTable();renderHist();}
+
+// ===== INIT =====
+renderPicker();syncUI();refreshAll();
 </script>
 </body>
 </html>
