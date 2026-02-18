@@ -8,323 +8,374 @@
 <meta name="theme-color" content="#0f0f1a">
 <title>Bầu Cua Advisor</title>
 <style>
-:root {
-  --bg: #0f0f1a; --card: #181830; --card2: #22223a;
-  --accent: #f7c948; --accent2: #ff6b6b; --green: #51cf66;
-  --cyan: #22b8cf; --text: #f1f3f5; --dim: #868e96;
-  --orange: #ff922b; --r: 18px;
-  --safe-b: env(safe-area-inset-bottom, 0px);
+:root{
+  --bg:#0f0f1a;--card:#181830;--card2:#22223a;--card3:#2a2a48;
+  --accent:#f7c948;--accent2:#ff6b6b;--green:#51cf66;--cyan:#22b8cf;
+  --orange:#ff922b;--purple:#b197fc;--text:#f1f3f5;--dim:#868e96;
+  --r:16px;--safe-b:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{
-  height:100%;overflow:hidden;
-  font-family:-apple-system,system-ui,'Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);
-  -webkit-tap-highlight-color:transparent;
-  -webkit-text-size-adjust:100%;touch-action:manipulation;
-}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,system-ui,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;touch-action:manipulation}
+.app{display:flex;flex-direction:column;height:100%;height:100dvh;max-width:480px;margin:0 auto;position:relative;overflow:hidden}
 
-/* ===== APP SHELL ===== */
-.app{display:flex;flex-direction:column;height:100%;height:100dvh;max-width:480px;margin:0 auto;position:relative}
+/* TOP BAR */
+.top-bar{flex-shrink:0;background:var(--card);border-bottom:1px solid rgba(255,255,255,.05);padding:6px 12px;padding-top:calc(env(safe-area-inset-top,4px)+2px);text-align:center;z-index:10;min-height:44px;display:flex;align-items:center;justify-content:center}
+.tr{font-size:.78rem;font-weight:700;color:var(--dim);width:100%}
+.tr .picks{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:2px}
+.tr .chip{display:inline-flex;align-items:center;gap:3px;background:rgba(81,207,102,.1);border:1.5px solid var(--green);border-radius:50px;padding:2px 10px 2px 6px;font-size:.78rem;font-weight:700;color:var(--green)}
+.tr .chip .ce{font-size:1rem}
+.tr .chip.s2{border-color:var(--cyan);color:var(--cyan);background:rgba(34,184,207,.1)}
+.tr .sub{font-size:.6rem;color:var(--dim);font-weight:500;margin-top:1px}
+.tr .timer{font-size:.58rem;color:var(--dim);margin-top:1px}
 
-/* Top bar */
-.top-bar{
-  flex-shrink:0;background:var(--card);
-  border-bottom:1px solid rgba(255,255,255,.05);
-  padding:8px 14px;padding-top:calc(env(safe-area-inset-top,6px)+4px);
-  text-align:center;z-index:10;
-}
-.top-rec{font-size:.8rem;font-weight:700;color:var(--dim);width:100%}
-.top-rec .picks{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px}
-.top-rec .chip{
-  display:inline-flex;align-items:center;gap:4px;
-  background:rgba(81,207,102,.1);border:1.5px solid var(--green);
-  border-radius:50px;padding:3px 12px 3px 7px;font-size:.82rem;font-weight:700;color:var(--green);
-}
-.top-rec .chip .ce{font-size:1.1rem}
-.top-rec .chip.s2{border-color:var(--cyan);color:var(--cyan);background:rgba(34,184,207,.1)}
-.top-rec .sub{font-size:.65rem;color:var(--dim);font-weight:500;margin-top:2px}
-
-/* Pages */
-.page-area{flex:1;overflow:hidden;position:relative}
-.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px 80px;display:none}
+/* PAGES */
+.page-wrap{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 10px 76px;display:none;will-change:transform}
 .page.active{display:block}
 
-/* Bottom nav */
-.bnav{
-  flex-shrink:0;display:flex;background:var(--card);
-  border-top:1px solid rgba(255,255,255,.06);
-  padding-bottom:var(--safe-b);z-index:10;
-}
-.nb{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:7px 0 5px;gap:1px;background:none;border:none;cursor:pointer;color:var(--dim);
-  transition:color .2s;-webkit-tap-highlight-color:transparent;
-}
-.nb .ni{font-size:1.35rem;line-height:1}
-.nb .nt{font-size:.6rem;font-weight:700;letter-spacing:.2px}
+/* BOTTOM NAV */
+.bnav{flex-shrink:0;display:flex;background:var(--card);border-top:1px solid rgba(255,255,255,.06);padding-bottom:var(--safe-b);z-index:10}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0 4px;gap:0;background:none;border:none;cursor:pointer;color:var(--dim);transition:color .15s}
+.nb .ni{font-size:1.2rem;line-height:1}
+.nb .nt{font-size:.55rem;font-weight:700;letter-spacing:.2px}
 .nb.on .ni,.nb.on .nt{color:var(--accent)}
 
-/* ===== SHARED ===== */
-.card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,.04)}
-.stitle{font-size:.88rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.empty{text-align:center;padding:20px 10px;color:var(--dim);font-size:.85rem;line-height:1.5}
+/* SHARED */
+.card{background:var(--card);border-radius:var(--r);padding:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,.04)}
+.st{font-size:.82rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.empty{text-align:center;padding:16px 8px;color:var(--dim);font-size:.82rem;line-height:1.4}
 
-/* ===== LOG PAGE ===== */
-.step-msg{text-align:center;font-size:.85rem;font-weight:700;margin-bottom:12px;min-height:22px;color:var(--cyan)}
-.step-msg.ok{color:var(--green)}
+/* LOG PAGE */
+.smsg{text-align:center;font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--cyan)}
+.smsg.ok{color:var(--green)}
+.die-row{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.db{width:28%;max-width:88px;aspect-ratio:1;border-radius:14px;background:var(--card2);border:2.5px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:2.3rem;position:relative;transition:all .2s;cursor:pointer}
+.db .dl{font-size:.55rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;position:absolute;bottom:4px}
+.db.filled{border-style:solid;border-color:var(--accent);background:rgba(247,201,72,.06)}
+.db.filled .dl{display:none}
+.db.cur{border-color:var(--cyan);border-style:solid;animation:gl 1.4s infinite}
+.db .xb{position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--accent2);color:#fff;border:2px solid var(--bg);font-size:.55rem;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer}
+.db.filled .xb{display:flex}
+@keyframes gl{0%,100%{box-shadow:0 0 0 0 rgba(34,184,207,.25)}50%{box-shadow:0 0 0 8px rgba(34,184,207,0)}}
 
-.die-row{display:flex;gap:10px;justify-content:center;margin-bottom:12px}
-.dbox{
-  width:30%;max-width:96px;aspect-ratio:1;border-radius:16px;background:var(--card2);
-  border:2.5px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
-  font-size:2.5rem;position:relative;transition:all .2s;cursor:pointer;
-}
-.dbox .dl{font-size:.58rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;position:absolute;bottom:5px}
-.dbox.filled{border-style:solid;border-color:var(--accent);background:rgba(247,201,72,.06)}
-.dbox.filled .dl{display:none}
-.dbox.cur{border-color:var(--cyan);border-style:solid;animation:glow 1.4s infinite}
-.dbox .xb{
-  position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;
-  background:var(--accent2);color:#fff;border:2px solid var(--bg);
-  font-size:.6rem;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer;
-}
-.dbox.filled .xb{display:flex}
-@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,184,207,.25)}50%{box-shadow:0 0 0 10px rgba(34,184,207,0)}}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.sb{background:var(--card2);border:2px solid transparent;border-radius:12px;padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none;min-height:74px;justify-content:center;position:relative}
+.sb:active{transform:scale(.9);background:rgba(247,201,72,.12)}
+.sb .se{font-size:2rem;line-height:1.1}
+.sb .sn{font-size:.68rem;font-weight:700}
+.sb .sv{font-size:.55rem;color:var(--dim)}
+.sb .shits{position:absolute;top:4px;right:6px;font-size:.55rem;font-weight:700;color:var(--dim);background:rgba(0,0,0,.3);padding:1px 5px;border-radius:8px}
 
-.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.sbtn{
-  background:var(--card2);border:2.5px solid transparent;border-radius:14px;
-  padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;
-  cursor:pointer;transition:all .12s;-webkit-user-select:none;user-select:none;
-  min-height:80px;justify-content:center;
-}
-.sbtn:active{transform:scale(.9);background:rgba(247,201,72,.12)}
-.sbtn .se{font-size:2.2rem;line-height:1.1}
-.sbtn .sn{font-size:.72rem;font-weight:700}
-.sbtn .sv{font-size:.6rem;color:var(--dim)}
-
-.logbtn{
-  width:100%;padding:16px;border:none;border-radius:14px;
-  font-size:1.05rem;font-weight:800;cursor:pointer;
-  background:linear-gradient(135deg,var(--accent),#e6a700);color:#1a0a2e;
-  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
-}
+.logbtn{width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--accent),#e6a700);color:#1a0a2e;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
 .logbtn:disabled{opacity:.3;cursor:default}
 .logbtn:active:not(:disabled){transform:scale(.97)}
 
-.aux-row{display:flex;gap:8px;justify-content:center;margin-top:8px}
-.aux-btn{
-  background:var(--card2);border:1.5px solid rgba(255,255,255,.08);border-radius:50px;
-  color:var(--dim);font-size:.75rem;font-weight:600;padding:7px 14px;cursor:pointer;
-  display:flex;align-items:center;gap:4px;
-}
-.aux-btn:active{background:rgba(255,255,255,.06)}
-.aux-btn .ai{font-size:.9rem}
+.aux{display:flex;gap:6px;justify-content:center;margin-top:7px;flex-wrap:wrap}
+.ab{background:var(--card2);border:1px solid rgba(255,255,255,.06);border-radius:50px;color:var(--dim);font-size:.7rem;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:3px}
+.ab:active{background:rgba(255,255,255,.06)}
+.ab .ai{font-size:.85rem}
 
-/* Live tip card */
-.tip-card{
-  background:linear-gradient(135deg,rgba(34,184,207,.08),rgba(247,201,72,.06));
-  border:1.5px solid rgba(34,184,207,.15);border-radius:14px;
-  padding:12px 14px;margin-top:12px;
-}
-.tip-card .tip-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:.75rem;font-weight:700;color:var(--cyan)}
-.tip-card .tip-text{font-size:.8rem;color:var(--text);line-height:1.5}
-.tip-card .tip-text strong{color:var(--accent)}
+/* Last 5 strip */
+.last5{display:flex;gap:4px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+.l5{background:var(--card2);border-radius:8px;padding:4px 8px;font-size:1rem;display:flex;align-items:center;gap:1px}
+.l5 .l5n{font-size:.55rem;color:var(--dim);margin-right:4px;font-weight:600}
+
+/* Tip card */
+.tipc{background:linear-gradient(135deg,rgba(34,184,207,.06),rgba(247,201,72,.04));border:1px solid rgba(34,184,207,.12);border-radius:12px;padding:10px 12px;margin-top:8px}
+.tipc .th{display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:.7rem;font-weight:700;color:var(--cyan)}
+.tipc .tt{font-size:.76rem;color:var(--text);line-height:1.45}
+.tipc .tt strong{color:var(--accent)}
+
+/* Bet tracking section */
+.bet-section{margin-top:8px}
+.bet-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;justify-content:center}
+.bet-row label{font-size:.75rem;color:var(--dim);font-weight:600}
+.bet-row input,.bet-row select{padding:7px 8px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:.85rem;outline:none;font-weight:600}
+.bet-row input:focus,.bet-row select:focus{border-color:var(--accent)}
+.bet-row input[type=number]{width:80px;text-align:center}
+.pnl-display{text-align:center;margin-top:6px}
+.pnl-display .pnl-val{font-size:1.3rem;font-weight:800}
+.pnl-display .pnl-val.pos{color:var(--green)}
+.pnl-display .pnl-val.neg{color:var(--accent2)}
+.pnl-display .pnl-lbl{font-size:.6rem;color:var(--dim);text-transform:uppercase;font-weight:600}
 
 /* Toast */
-.toast{
-  position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-10px);
-  background:var(--green);color:#0f0f1a;padding:9px 22px;border-radius:50px;
-  font-size:.85rem;font-weight:700;z-index:100;opacity:0;pointer-events:none;
-  transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.4);
-}
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-8px);background:var(--green);color:#0f0f1a;padding:8px 20px;border-radius:50px;font-size:.82rem;font-weight:700;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ===== ADVICE PAGE ===== */
-.rec-hero{text-align:center;padding:4px 0 8px}
-.rec-hero .rh{font-size:.85rem;color:var(--green);font-weight:700;margin-bottom:12px}
-.rec-hero .bp{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
-.pcard{
-  background:var(--card2);border:2.5px solid var(--green);border-radius:18px;
-  padding:14px 20px;text-align:center;min-width:105px;
-}
-.pcard.p2{border-color:var(--cyan)}
-.pcard .pe{font-size:2.8rem;display:block}
-.pcard .pn{font-size:.88rem;font-weight:700;margin-top:2px}
-.pcard .pb{
-  display:inline-block;font-size:.62rem;font-weight:700;
-  padding:3px 10px;border-radius:50px;margin-top:5px;
-}
-.pcard .pb.b1{background:rgba(81,207,102,.15);color:var(--green)}
-.pcard .pb.b2{background:rgba(34,184,207,.15);color:var(--cyan)}
+/* ADVICE PAGE */
+.rec-hero{text-align:center;padding:2px 0 6px}
+.rec-hero .rh{font-size:.82rem;color:var(--green);font-weight:700;margin-bottom:10px}
+.bp{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
+.pc{background:var(--card2);border:2.5px solid var(--green);border-radius:16px;padding:12px 18px;text-align:center;min-width:100px}
+.pc.p2{border-color:var(--cyan)}
+.pc .pe{font-size:2.4rem;display:block}
+.pc .pn{font-size:.82rem;font-weight:700;margin-top:2px}
+.pc .pb{display:inline-block;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:50px;margin-top:4px}
+.pc .pb.b1{background:rgba(81,207,102,.15);color:var(--green)}
+.pc .pb.b2{background:rgba(34,184,207,.15);color:var(--cyan)}
+.cbar{max-width:200px;margin:0 auto 6px}
+.cbar .cl{font-size:.6rem;color:var(--dim);margin-bottom:2px;text-align:center}
+.cbar .ct{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.cbar .cf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--green));transition:width .4s}
+.rnote{font-size:.72rem;color:var(--dim);text-align:center;line-height:1.4;margin-bottom:6px}
 
-.cbar{max-width:220px;margin:0 auto 8px}
-.cbar .cl{font-size:.65rem;color:var(--dim);margin-bottom:3px;text-align:center}
-.cbar .ct{height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
-.cbar .cf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--green));transition:width .4s}
+/* Prediction accuracy */
+.pred-box{background:var(--card2);border-radius:12px;padding:10px;text-align:center;margin-bottom:8px}
+.pred-box .pred-val{font-size:1.4rem;font-weight:800}
+.pred-box .pred-lbl{font-size:.6rem;color:var(--dim);text-transform:uppercase;font-weight:600;margin-top:1px}
 
-.rnote{font-size:.76rem;color:var(--dim);text-align:center;line-height:1.5;margin-bottom:8px}
+/* Trends */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.tc{background:var(--card2);border-radius:10px;padding:8px 2px;text-align:center}
+.tc .te{font-size:1.2rem}
+.tc .ta{font-size:.85rem;font-weight:800}
+.tc .ta.up{color:var(--green)}.tc .ta.dn{color:var(--accent2)}.tc .ta.fl{color:var(--dim)}
+.tc .tp{font-size:.58rem;color:var(--dim);margin-top:0}
 
-/* Trend mini cards */
-.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.tcard{background:var(--card2);border-radius:12px;padding:10px 4px;text-align:center}
-.tcard .te{font-size:1.4rem}
-.tcard .tarrow{font-size:.9rem;font-weight:800}
-.tcard .tarrow.up{color:var(--green)}
-.tcard .tarrow.down{color:var(--accent2)}
-.tcard .tarrow.flat{color:var(--dim)}
-.tcard .tpct{font-size:.65rem;color:var(--dim);margin-top:1px}
+/* Streaks */
+.sk{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
+.skb{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:50px;font-size:.68rem;font-weight:700}
+.skb.hot{background:rgba(81,207,102,.1);color:var(--green);border:1px solid rgba(81,207,102,.2)}
+.skb.cold{background:rgba(255,107,107,.08);color:var(--accent2);border:1px solid rgba(255,107,107,.15)}
 
-/* Streak badges */
-.streak-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-.streak-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:5px 12px;
-  border-radius:50px;font-size:.72rem;font-weight:700;
-}
-.streak-badge.hot{background:rgba(81,207,102,.12);color:var(--green);border:1px solid rgba(81,207,102,.2)}
-.streak-badge.cold{background:rgba(255,107,107,.1);color:var(--accent2);border:1px solid rgba(255,107,107,.2)}
+/* Drought */
+.drought-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.dg-item{background:var(--card2);border-radius:10px;padding:8px 4px;text-align:center}
+.dg-item .de{font-size:1.2rem}
+.dg-item .dv{font-size:.9rem;font-weight:800;margin-top:1px}
+.dg-item .dv.fresh{color:var(--green)}
+.dg-item .dv.stale{color:var(--accent2)}
+.dg-item .dl2{font-size:.55rem;color:var(--dim);margin-top:0}
+
+/* Pair analysis */
+.pair-list{display:flex;flex-direction:column;gap:4px}
+.pair-row{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--card2);border-radius:8px;font-size:.78rem}
+.pair-row .pemoji{font-size:1.1rem;width:50px;text-align:center}
+.pair-row .pbar{flex:1;height:16px;background:rgba(0,0,0,.2);border-radius:8px;overflow:hidden}
+.pair-row .pfill{height:100%;border-radius:8px;background:var(--cyan);transition:width .3s}
+.pair-row .pval{width:32px;text-align:right;font-weight:700;font-size:.72rem}
 
 /* Sizing */
-.brow{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px}
-.brow label{font-size:.82rem;color:var(--dim);font-weight:600}
-.brow input{
-  width:100px;padding:9px;border-radius:10px;background:rgba(0,0,0,.3);
-  border:1.5px solid rgba(255,255,255,.1);color:var(--text);font-size:1.05rem;
-  font-weight:700;text-align:center;outline:none;
-}
+.brow{display:flex;align-items:center;gap:5px;justify-content:center;margin-bottom:6px}
+.brow label{font-size:.78rem;color:var(--dim);font-weight:600}
+.brow input{width:90px;padding:8px;border-radius:10px;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.1);color:var(--text);font-size:1rem;font-weight:700;text-align:center;outline:none}
 .brow input:focus{border-color:var(--accent)}
-.spills{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
-.spill{background:var(--card2);border-radius:10px;padding:9px 10px;text-align:center;flex:1;min-width:70px}
-.spill .sa{font-size:1.1rem;font-weight:800;color:var(--cyan)}
-.spill .sl{font-size:.58rem;color:var(--dim);margin-top:1px;text-transform:uppercase;font-weight:600;letter-spacing:.2px}
+.sp{display:flex;gap:5px;justify-content:center;margin-bottom:6px}
+.spi{background:var(--card2);border-radius:10px;padding:8px 8px;text-align:center;flex:1;min-width:65px}
+.spi .sa{font-size:1rem;font-weight:800;color:var(--cyan)}
+.spi .sl{font-size:.52rem;color:var(--dim);margin-top:0;text-transform:uppercase;font-weight:600}
+.tipbox{background:rgba(247,201,72,.05);border-left:3px solid var(--accent);padding:8px 10px;border-radius:0 10px 10px 0;font-size:.72rem;color:var(--dim);line-height:1.4}
 
-.tipbox{
-  background:rgba(247,201,72,.06);border-left:3px solid var(--accent);
-  padding:10px 12px;border-radius:0 12px 12px 0;font-size:.76rem;color:var(--dim);line-height:1.5;
-}
+/* Smart tips */
+.atip{background:var(--card2);border-radius:10px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:flex-start;gap:6px}
+.atip .ati{font-size:1rem;flex-shrink:0;margin-top:1px}
+.atip .att{font-size:.74rem;line-height:1.4;color:var(--text)}
+.atip .att strong{color:var(--accent)}
 
-/* Dynamic advice tips */
-.advice-tips{margin-top:10px}
-.atip{
-  background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px;
-  display:flex;align-items:flex-start;gap:8px;
-}
-.atip .aticon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
-.atip .attext{font-size:.78rem;line-height:1.5;color:var(--text)}
-.atip .attext strong{color:var(--accent)}
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0}
+.donut-wrap canvas{width:120px;height:120px}
+.donut-legend{font-size:.68rem;line-height:1.8}
+.donut-legend .dl-item{display:flex;align-items:center;gap:5px}
+.donut-legend .dl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
-/* ===== STATS PAGE ===== */
-.qs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.qi{background:var(--card2);border-radius:12px;padding:12px 4px;text-align:center}
-.qi .qv{font-size:1.2rem;font-weight:800}
-.qi .ql{font-size:.58rem;color:var(--dim);margin-top:2px;text-transform:uppercase;font-weight:600}
+/* Heatmap */
+.heatmap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.hm-table{border-collapse:collapse;font-size:.6rem;white-space:nowrap}
+.hm-table th{padding:3px 6px;color:var(--dim);font-weight:600;text-align:center;position:sticky;left:0;background:var(--card);z-index:1}
+.hm-table td{padding:3px 6px;text-align:center;font-size:.9rem}
+.hm-table .hm-head{font-size:.55rem;color:var(--dim);font-weight:600}
+.hm-cell{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;font-size:.85rem}
+.hm-cell.hit{background:rgba(81,207,102,.15)}
+.hm-cell.miss{opacity:.15}
 
-.rrow{display:flex;align-items:center;gap:7px;margin:6px 0}
-.rrow .re{font-size:1.4rem;width:30px;text-align:center}
-.rrow .rbg{flex:1;height:24px;background:rgba(0,0,0,.25);border-radius:12px;overflow:hidden}
-.rrow .rf{height:100%;border-radius:12px;transition:width .35s;display:flex;align-items:center;padding:0 8px;font-size:.68rem;font-weight:800}
+/* STATS PAGE */
+.qs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.qi{background:var(--card2);border-radius:10px;padding:10px 2px;text-align:center}
+.qi .qv{font-size:1.1rem;font-weight:800}
+.qi .ql{font-size:.52rem;color:var(--dim);margin-top:1px;text-transform:uppercase;font-weight:600}
+
+.rrow{display:flex;align-items:center;gap:6px;margin:5px 0}
+.rrow .re{font-size:1.3rem;width:28px;text-align:center}
+.rrow .rbg{flex:1;height:22px;background:rgba(0,0,0,.25);border-radius:11px;overflow:hidden}
+.rrow .rf{height:100%;border-radius:11px;transition:width .3s;display:flex;align-items:center;padding:0 7px;font-size:.65rem;font-weight:800}
 .rrow .rf.hot{background:var(--green);color:#0f0f1a}
 .rrow .rf.cold{background:var(--accent2);color:#fff}
 .rrow .rf.mid{background:#555;color:#ccc}
-.rrow .rp{width:48px;text-align:right;font-size:.8rem;font-weight:700}
+.rrow .rp{width:44px;text-align:right;font-size:.75rem;font-weight:700}
 
-.dtable{width:100%;border-collapse:collapse;font-size:.75rem}
-.dtable th{padding:7px 4px;text-align:center;color:var(--accent);font-size:.6rem;text-transform:uppercase;letter-spacing:.3px}
+/* Prob calculator */
+.prob-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+.prob-item{background:var(--card2);border-radius:10px;padding:10px;text-align:center}
+.prob-item .prob-label{font-size:.65rem;color:var(--dim)}
+.prob-item .prob-val{font-size:1rem;font-weight:800;color:var(--cyan)}
+
+.dtable{width:100%;border-collapse:collapse;font-size:.7rem}
+.dtable th{padding:6px 3px;text-align:center;color:var(--accent);font-size:.55rem;text-transform:uppercase}
 .dtable th:first-child{text-align:left}
-.dtable td{padding:8px 4px;text-align:center;border-bottom:1px solid rgba(255,255,255,.03)}
+.dtable td{padding:7px 3px;text-align:center;border-bottom:1px solid rgba(255,255,255,.03)}
 .dtable td:first-child{text-align:left}
 .dtable .hot{color:var(--green);font-weight:700}
 .dtable .cold{color:var(--accent2);font-weight:700}
 
-/* ===== HISTORY PAGE ===== */
-.hrow{display:flex;align-items:center;padding:9px 10px;background:var(--card2);border-radius:12px;margin-bottom:6px}
-.hrow .hn{color:var(--dim);font-weight:700;font-size:.75rem;width:34px}
-.hrow .hd{flex:1;text-align:center;font-size:1.5rem;letter-spacing:6px}
-.hrow .hdel{
-  width:30px;height:30px;border-radius:50%;background:rgba(255,107,107,.1);
-  border:none;color:var(--accent2);font-size:.75rem;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-}
+/* Bankroll chart */
+.chart-wrap{position:relative;margin:6px 0}
+.chart-wrap canvas{width:100%;height:140px;display:block}
+
+/* HISTORY PAGE */
+.hrow{display:flex;align-items:center;padding:8px 8px;background:var(--card2);border-radius:10px;margin-bottom:5px}
+.hrow .hn{color:var(--dim);font-weight:700;font-size:.7rem;width:30px}
+.hrow .hd{flex:1;text-align:center;font-size:1.3rem;letter-spacing:4px}
+.hrow .hdel{width:28px;height:28px;border-radius:50%;background:rgba(255,107,107,.1);border:none;color:var(--accent2);font-size:.7rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .hrow .hdel:active{background:rgba(255,107,107,.25)}
-.clr-row{text-align:center;margin-bottom:8px}
-.clr-btn{
-  background:none;border:1.5px solid rgba(255,107,107,.2);color:var(--accent2);
-  font-size:.75rem;font-weight:600;padding:7px 18px;border-radius:50px;cursor:pointer;
-}
+.clr-row{text-align:center;margin-bottom:6px}
+.clr-btn{background:none;border:1.5px solid rgba(255,107,107,.2);color:var(--accent2);font-size:.7rem;font-weight:600;padding:6px 16px;border-radius:50px;cursor:pointer}
 .clr-btn:active{background:rgba(255,107,107,.1)}
+
+/* Export/import */
+.ei-row{display:flex;gap:6px;justify-content:center;margin-top:6px;margin-bottom:8px}
+.ei-btn{background:var(--card2);border:1px solid rgba(255,255,255,.06);border-radius:50px;color:var(--dim);font-size:.68rem;font-weight:600;padding:6px 14px;cursor:pointer;display:flex;align-items:center;gap:3px}
+.ei-btn:active{background:rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
 
 <div class="app">
-  <div class="top-bar"><div class="top-rec" id="topRec"><span style="color:var(--dim)">Loading...</span></div></div>
+  <div class="top-bar"><div class="tr" id="topRec"><span style="color:var(--dim)">Loading...</span></div></div>
 
-  <div class="page-area">
+  <div class="page-wrap" id="pageWrap">
     <!-- LOG -->
     <div class="page active" id="pg-log">
-      <div class="step-msg" id="stepMsg">Tap the symbol on Die 1</div>
+      <div class="last5" id="last5"></div>
+      <div class="smsg" id="stepMsg">Tap the symbol on Die 1</div>
       <div class="die-row">
-        <div class="dbox cur" id="d0" onclick="clearSlot(0)"><span class="dl">Die 1</span><button class="xb" onclick="event.stopPropagation();clearSlot(0)">X</button></div>
-        <div class="dbox" id="d1" onclick="clearSlot(1)"><span class="dl">Die 2</span><button class="xb" onclick="event.stopPropagation();clearSlot(1)">X</button></div>
-        <div class="dbox" id="d2" onclick="clearSlot(2)"><span class="dl">Die 3</span><button class="xb" onclick="event.stopPropagation();clearSlot(2)">X</button></div>
+        <div class="db cur" id="d0" onclick="clearSlot(0)"><span class="dl">Die 1</span><button class="xb" onclick="event.stopPropagation();clearSlot(0)">X</button></div>
+        <div class="db" id="d1" onclick="clearSlot(1)"><span class="dl">Die 2</span><button class="xb" onclick="event.stopPropagation();clearSlot(1)">X</button></div>
+        <div class="db" id="d2" onclick="clearSlot(2)"><span class="dl">Die 3</span><button class="xb" onclick="event.stopPropagation();clearSlot(2)">X</button></div>
       </div>
       <div class="pgrid" id="picker"></div>
       <button class="logbtn" id="logBtn" disabled onclick="logRoll()">Log This Roll</button>
-      <div class="aux-row">
-        <button class="aux-btn" onclick="clearSlots()"><span class="ai">↺</span> Clear</button>
-        <button class="aux-btn" id="undoBtn" style="display:none" onclick="undoLast()"><span class="ai">↩</span> Undo Last</button>
-        <button class="aux-btn" id="repeatBtn" style="display:none" onclick="repeatLast()"><span class="ai">⟳</span> Repeat Last</button>
+      <div class="aux">
+        <button class="ab" onclick="clearSlots()"><span class="ai">↺</span>Clear</button>
+        <button class="ab" id="undoBtn" style="display:none" onclick="undoLast()"><span class="ai">↩</span>Undo</button>
+        <button class="ab" id="repeatBtn" style="display:none" onclick="repeatLast()"><span class="ai">⟳</span>Repeat</button>
       </div>
-      <div class="tip-card" id="liveTip">
-        <div class="tip-header">💡 Tip</div>
-        <div class="tip-text" id="liveTipText">Log your first roll to start getting live advice.</div>
+
+      <!-- Bet tracker -->
+      <div class="card bet-section" style="margin-top:10px">
+        <div class="st">💰 Track Your Bets</div>
+        <div class="bet-row">
+          <label>Bet $</label>
+          <input type="number" id="betAmt" value="50" min="0" inputmode="numeric" style="width:70px">
+          <label>on</label>
+          <select id="betSym" style="width:auto">
+            <option value="">-- pick --</option>
+            <option value="gourd">🍐 Gourd</option>
+            <option value="crab">🦀 Crab</option>
+            <option value="fish">🐟 Fish</option>
+            <option value="rooster">🐓 Rooster</option>
+            <option value="shrimp">🦐 Shrimp</option>
+            <option value="deer">🦌 Deer</option>
+          </select>
+        </div>
+        <div class="pnl-display">
+          <div class="pnl-val" id="pnlVal">$0</div>
+          <div class="pnl-lbl">Session P&L</div>
+        </div>
+      </div>
+
+      <div class="tipc" id="liveTip">
+        <div class="th">💡 Live Tip</div>
+        <div class="tt" id="liveTipText">Log rolls to get live tips.</div>
       </div>
     </div>
 
     <!-- ADVICE -->
     <div class="page" id="pg-advice">
-      <div class="rec-hero" id="recHero"><div class="empty">Loading advice...</div></div>
+      <div class="rec-hero" id="recHero"><div class="empty">Loading...</div></div>
+
+      <div class="card" id="predCard" style="display:none">
+        <div class="st">🎯 Prediction Accuracy</div>
+        <div class="pred-box"><div class="pred-val" id="predVal">--</div><div class="pred-lbl">of #1 picks appeared in the next roll</div></div>
+      </div>
+
       <div class="card" id="trendCard" style="display:none">
-        <div class="stitle">📈 Trends (last 10 vs overall)</div>
-        <div class="trend-grid" id="trendGrid"></div>
+        <div class="st">📈 Trends (recent vs overall)</div>
+        <div class="tg" id="trendGrid"></div>
       </div>
+
+      <div class="card" id="droughtCard" style="display:none">
+        <div class="st">🏜️ Rounds Since Last Seen</div>
+        <div class="drought-grid" id="droughtGrid"></div>
+      </div>
+
       <div class="card" id="streakCard" style="display:none">
-        <div class="stitle">🔥 Active Streaks</div>
-        <div class="streak-row" id="streakRow"></div>
+        <div class="st">🔥 Active Streaks</div>
+        <div class="sk" id="streakRow"></div>
       </div>
+
       <div class="card">
-        <div class="stitle">💰 Bet Sizing</div>
-        <div class="brow">
-          <label>Bankroll $</label>
-          <input type="number" id="bankrollIn" value="1000" min="0" inputmode="numeric" oninput="updateRec()">
-        </div>
-        <div class="spills" id="sizePills"></div>
-        <div class="tipbox">Bet on the #1 or #2 pick. If you're up, pocket your profit.</div>
+        <div class="st">💰 Bet Sizing</div>
+        <div class="brow"><label>Bankroll $</label><input type="number" id="bankrollIn" value="1000" min="0" inputmode="numeric" oninput="updateRec()"></div>
+        <div class="sp" id="sizePills"></div>
+        <div class="tipbox">Bet on the #1 or #2 pick. Pocket profits when ahead.</div>
       </div>
+
       <div class="card">
-        <div class="stitle">🧠 Smart Tips</div>
-        <div class="advice-tips" id="adviceTips"></div>
+        <div class="st">🧠 Smart Tips</div>
+        <div id="adviceTips"></div>
       </div>
     </div>
 
     <!-- STATS -->
     <div class="page" id="pg-stats">
-      <div class="qs" id="qStats">
+      <div class="qs">
         <div class="qi"><div class="qv" id="qR">0</div><div class="ql">Rounds</div></div>
         <div class="qi"><div class="qv" id="qH">--</div><div class="ql">Hottest</div></div>
         <div class="qi"><div class="qv" id="qC">--</div><div class="ql">Coldest</div></div>
-        <div class="qi"><div class="qv" id="qD">0</div><div class="ql">Total Dice</div></div>
+        <div class="qi"><div class="qv" id="qD">0</div><div class="ql">Dice</div></div>
         <div class="qi"><div class="qv" id="qB">--</div><div class="ql">Best Streak</div></div>
-        <div class="qi"><div class="qv" id="qW">--</div><div class="ql">Worst Streak</div></div>
+        <div class="qi"><div class="qv" id="qP">--</div><div class="ql">Session P&L</div></div>
       </div>
-      <div class="card"><div class="stitle">📊 Symbol Rankings</div><div id="rankArea"><div class="empty">No data.</div></div></div>
-      <div class="card"><div class="stitle">📋 Frequency Table</div><div id="tableArea"><div class="empty">No data.</div></div></div>
+
+      <div class="card"><div class="st">📊 Rankings</div><div id="rankArea"></div></div>
+
+      <div class="card">
+        <div class="st">🍩 Distribution (actual vs expected)</div>
+        <div class="donut-wrap"><canvas id="donutCanvas" width="240" height="240"></canvas><div class="donut-legend" id="donutLegend"></div></div>
+      </div>
+
+      <div class="card"><div class="st">📋 Frequency Table</div><div id="tableArea"></div></div>
+
+      <div class="card" id="pairCard" style="display:none">
+        <div class="st">🤝 Top Pairs (symbols appearing together)</div>
+        <div class="pair-list" id="pairList"></div>
+      </div>
+
+      <div class="card" id="heatCard" style="display:none">
+        <div class="st">🗺️ Heatmap (last 20 rounds)</div>
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+
+      <div class="card">
+        <div class="st">📐 Probability Calculator</div>
+        <div class="prob-grid" id="probGrid"></div>
+      </div>
+
+      <div class="card" id="chartCard" style="display:none">
+        <div class="st">💹 Bankroll Over Time</div>
+        <div class="chart-wrap"><canvas id="bnkChart"></canvas></div>
+      </div>
     </div>
 
     <!-- HISTORY -->
     <div class="page" id="pg-hist">
       <div class="clr-row" id="clrRow" style="display:none"><button class="clr-btn" onclick="clearHistory()">Clear All History</button></div>
+      <div class="ei-row">
+        <button class="ei-btn" onclick="exportData()">📤 Export</button>
+        <button class="ei-btn" onclick="importData()">📥 Import</button>
+      </div>
       <div id="histList"><div class="empty">No rolls logged yet.</div></div>
     </div>
   </div>
@@ -340,17 +391,16 @@ html,body{
 
 <script>
 const SYM=[
-  {id:'gourd',n:'Gourd',vi:'Bầu',e:'🍐'},
-  {id:'crab',n:'Crab',vi:'Cua',e:'🦀'},
-  {id:'fish',n:'Fish',vi:'Cá',e:'🐟'},
-  {id:'rooster',n:'Rooster',vi:'Gà',e:'🐓'},
-  {id:'shrimp',n:'Shrimp',vi:'Tôm',e:'🦐'},
-  {id:'deer',n:'Deer',vi:'Nai',e:'🦌'},
+  {id:'gourd',n:'Gourd',vi:'Bầu',e:'🍐',clr:'#a8d65b'},
+  {id:'crab',n:'Crab',vi:'Cua',e:'🦀',clr:'#ff6b6b'},
+  {id:'fish',n:'Fish',vi:'Cá',e:'🐟',clr:'#22b8cf'},
+  {id:'rooster',n:'Rooster',vi:'Gà',e:'🐓',clr:'#f7c948'},
+  {id:'shrimp',n:'Shrimp',vi:'Tôm',e:'🦐',clr:'#ff922b'},
+  {id:'deer',n:'Deer',vi:'Nai',e:'🦌',clr:'#b197fc'},
 ];
 const MAP={};SYM.forEach(s=>MAP[s.id]=s);
-const E2ID={'🍐':'gourd','🦀':'crab','🐟':'fish','🐓':'rooster','🦐':'shrimp','🦌':'deer'};
 
-const SEED_DATA = [
+const SEED=[
   ['deer','rooster','gourd'],['rooster','fish','shrimp'],['fish','gourd','shrimp'],
   ['rooster','crab','shrimp'],['rooster','crab','crab'],['deer','deer','gourd'],
   ['deer','gourd','crab'],['gourd','shrimp','shrimp'],['shrimp','shrimp','rooster'],
@@ -365,30 +415,54 @@ const SEED_DATA = [
   ['shrimp','fish','gourd']
 ];
 
-let slots=[null,null,null], cur=0;
-let hist=JSON.parse(localStorage.getItem('bc3')||'null');
+let slots=[null,null,null],cur=0;
+let hist=JSON.parse(localStorage.getItem('bc4')||'null');
+if(!hist||!hist.length){hist=SEED.map((d,i)=>({r:i+1,d,t:Date.now()-((SEED.length-i)*60000)}));save();}
 
-if(!hist||!hist.length){
-  hist=SEED_DATA.map((d,i)=>({r:i+1,d,t:Date.now()-((SEED_DATA.length-i)*60000)}));
-  localStorage.setItem('bc3',JSON.stringify(hist));
-}
-function save(){localStorage.setItem('bc3',JSON.stringify(hist))}
+let sessionPnl=parseFloat(localStorage.getItem('bc4_pnl')||'0');
+let bankrollHist=JSON.parse(localStorage.getItem('bc4_bnk')||'[1000]');
+let sessionStart=parseInt(localStorage.getItem('bc4_start')||Date.now());
+localStorage.setItem('bc4_start',sessionStart);
+let predictionHits=JSON.parse(localStorage.getItem('bc4_pred')||'{"hits":0,"total":0}');
 
-// ===== NAV =====
+function save(){localStorage.setItem('bc4',JSON.stringify(hist))}
+function savePnl(){localStorage.setItem('bc4_pnl',sessionPnl);localStorage.setItem('bc4_bnk',JSON.stringify(bankrollHist))}
+function savePred(){localStorage.setItem('bc4_pred',JSON.stringify(predictionHits))}
+
+// SWIPE
+let touchStartX=0,touchEndX=0;
+const pages=['log','advice','stats','hist'];
+let currentPage=0;
+document.getElementById('pageWrap').addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX},{passive:true});
+document.getElementById('pageWrap').addEventListener('touchend',e=>{
+  touchEndX=e.changedTouches[0].screenX;
+  const diff=touchStartX-touchEndX;
+  if(Math.abs(diff)>60){
+    if(diff>0&&currentPage<pages.length-1){currentPage++;goPage(pages[currentPage]);}
+    else if(diff<0&&currentPage>0){currentPage--;goPage(pages[currentPage]);}
+  }
+},{passive:true});
+
+// NAV
 function goPage(n,btn){
+  const idx=pages.indexOf(n);if(idx>=0)currentPage=idx;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('pg-'+n).classList.add('active');
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.nb').forEach((b,i)=>{b.classList.toggle('on',i===currentPage)});
+  if(btn){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
   refreshAll();
 }
 
-// ===== PICKER =====
+// PICKER
 function renderPicker(){
-  document.getElementById('picker').innerHTML=SYM.map(s=>`
-    <div class="sbtn" ontouchstart="" onclick="pick('${s.id}')">
+  const{freq,total}=analyze();
+  document.getElementById('picker').innerHTML=SYM.map(s=>{
+    const hits=freq[s.id]||0;
+    return`<div class="sb" ontouchstart="" onclick="pick('${s.id}')">
       <span class="se">${s.e}</span><span class="sn">${s.n}</span><span class="sv">${s.vi}</span>
-    </div>`).join('');
+      ${total?`<span class="shits">${hits}</span>`:''}
+    </div>`;
+  }).join('');
 }
 
 function pick(id){
@@ -397,74 +471,91 @@ function pick(id){
   while(cur<=2&&slots[cur]!==null)cur++;
   if(cur>2){let e=slots.indexOf(null);cur=e===-1?3:e;}
   syncUI();
+  try{navigator.vibrate&&navigator.vibrate(15);}catch(e){}
 }
-function clearSlot(i){if(slots[i]===null)return;slots[i]=null;cur=i;syncUI();}
-function clearSlots(){slots=[null,null,null];cur=0;syncUI();}
+function clearSlot(i){if(slots[i]===null)return;slots[i]=null;cur=i;syncUI()}
+function clearSlots(){slots=[null,null,null];cur=0;syncUI()}
 
 function syncUI(){
   const allDone=slots.every(s=>s!==null);
   for(let i=0;i<3;i++){
-    const el=document.getElementById('d'+i);
-    el.classList.remove('filled','cur');
-    const lbl=el.querySelector('.dl');
-    const txt=el.childNodes[0];
-    if(slots[i]!==null){
-      el.classList.add('filled');
-      lbl.style.display='none';
+    const el=document.getElementById('d'+i);el.classList.remove('filled','cur');
+    const lbl=el.querySelector('.dl'),txt=el.childNodes[0];
+    if(slots[i]!==null){el.classList.add('filled');lbl.style.display='none';
       if(txt&&txt.nodeType===3)txt.textContent=MAP[slots[i]].e;
       else el.insertBefore(document.createTextNode(MAP[slots[i]].e),el.firstChild);
-    } else {
-      lbl.style.display='';
-      if(txt&&txt.nodeType===3)txt.textContent='';
-    }
+    }else{lbl.style.display='';if(txt&&txt.nodeType===3)txt.textContent='';}
     if(i===cur&&!allDone)el.classList.add('cur');
   }
   const msg=document.getElementById('stepMsg'),btn=document.getElementById('logBtn');
-  if(allDone){msg.textContent='All set! Tap "Log This Roll"';msg.className='step-msg ok';btn.disabled=false;}
-  else{msg.textContent='Tap the symbol on Die '+(slots.indexOf(null)+1);msg.className='step-msg';btn.disabled=true;}
+  if(allDone){msg.textContent='All set! Tap "Log This Roll"';msg.className='smsg ok';btn.disabled=false;}
+  else{msg.textContent='Tap the symbol on Die '+(slots.indexOf(null)+1);msg.className='smsg';btn.disabled=true;}
 }
 
-// ===== LOG / UNDO / REPEAT =====
+// LOG
 function logRoll(){
   if(slots.some(s=>s===null))return;
-  hist.push({r:hist.length+1,d:[...slots],t:Date.now()});
-  save();showToast('Round '+hist.length+' logged  '+slots.map(s=>MAP[s].e).join(' '));
+  // Track prediction accuracy
+  const sc=getScores();
+  if(sc){
+    predictionHits.total++;
+    if(slots.includes(sc[0].id))predictionHits.hits++;
+    savePred();
+  }
+  // Track bet P&L
+  const betSym=document.getElementById('betSym').value;
+  const betAmt=parseInt(document.getElementById('betAmt').value)||0;
+  if(betSym&&betAmt>0){
+    const matches=slots.filter(s=>s===betSym).length;
+    const pnl=matches>0?betAmt*matches:-betAmt;
+    sessionPnl+=pnl;
+    const bank=parseInt(document.getElementById('bankrollIn').value)||1000;
+    bankrollHist.push(bank+sessionPnl);
+    savePnl();
+  }
+  hist.push({r:hist.length+1,d:[...slots],t:Date.now()});save();
+  showToast('Round '+hist.length+' logged  '+slots.map(s=>MAP[s].e).join(' '));
+  try{navigator.vibrate&&navigator.vibrate([15,50,15]);}catch(e){}
   clearSlots();refreshAll();
 }
-function undoLast(){
-  if(!hist.length)return;
-  const removed=hist.pop();
-  save();showToast('Undid round '+(hist.length+1));refreshAll();
-}
-function repeatLast(){
-  if(!hist.length)return;
-  const last=hist[hist.length-1];
-  slots=[...last.d];cur=3;syncUI();
-}
-function delRoll(i){hist.splice(i,1);hist.forEach((h,idx)=>h.r=idx+1);save();refreshAll();}
-function clearHistory(){if(!hist.length)return;if(!confirm('Clear all history?'))return;hist=[];save();refreshAll();}
-function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
+function undoLast(){if(!hist.length)return;hist.pop();save();showToast('Undid last roll');refreshAll();}
+function repeatLast(){if(!hist.length)return;const l=hist[hist.length-1];slots=[...l.d];cur=3;syncUI();}
+function delRoll(i){hist.splice(i,1);hist.forEach((h,x)=>h.r=x+1);save();refreshAll();}
+function clearHistory(){if(!hist.length)return;if(!confirm('Clear all?'))return;hist=[];save();sessionPnl=0;bankrollHist=[1000];savePnl();predictionHits={hits:0,total:0};savePred();refreshAll();}
+function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1600)}
 
-// ===== ANALYSIS =====
+// EXPORT / IMPORT
+function exportData(){
+  const txt=hist.map(h=>'#'+h.r+' '+h.d.map(d=>MAP[d].e).join('')).join('\n');
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>showToast('Copied to clipboard!'));}
+  else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied!');}
+}
+function importData(){
+  const txt=prompt('Paste exported data here:');
+  if(!txt)return;
+  const E2ID={'🍐':'gourd','🦀':'crab','🐟':'fish','🐓':'rooster','🦐':'shrimp','🦌':'deer'};
+  const lines=txt.trim().split('\n');
+  const imported=[];
+  lines.forEach(line=>{
+    const emojis=[...line].filter(c=>E2ID[c]);
+    if(emojis.length>=3){imported.push({r:imported.length+1,d:emojis.slice(0,3).map(e=>E2ID[e]),t:Date.now()});}
+  });
+  if(imported.length){hist=imported;save();showToast('Imported '+imported.length+' rounds');refreshAll();}
+  else showToast('No valid data found');
+}
+
+// ANALYSIS
 function analyze(){
   const freq={},recent={},last5={};
-  SYM.forEach(s=>{freq[s.id]=0;recent[s.id]=0;last5[s.id]=0;});
+  SYM.forEach(s=>{freq[s.id]=0;recent[s.id]=0;last5[s.id]=0});
   const total=hist.length*3;
-  hist.forEach((h,i)=>{
-    h.d.forEach(d=>{
-      freq[d]++;
-      if(i>=hist.length-10)recent[d]++;
-      if(i>=hist.length-5)last5[d]++;
-    });
-  });
+  hist.forEach((h,i)=>{h.d.forEach(d=>{freq[d]++;if(i>=hist.length-10)recent[d]++;if(i>=hist.length-5)last5[d]++})});
   return{freq,recent,last5,total,rounds:hist.length};
 }
-
 function getScores(){
   const{freq,recent,last5,total,rounds}=analyze();
   if(rounds<2)return null;
-  const exp=total/6, rT=Math.min(rounds,10)*3, rE=rT/6;
-  const l5T=Math.min(rounds,5)*3, l5E=l5T/6;
+  const exp=total/6,rT=Math.min(rounds,10)*3,rE=rT/6,l5T=Math.min(rounds,5)*3,l5E=l5T/6;
   return SYM.map(s=>{
     const f=freq[s.id],r=recent[s.id],l=last5[s.id];
     const dev=(f-exp)/Math.max(1,Math.sqrt(exp));
@@ -473,22 +564,9 @@ function getScores(){
     return{...s,f,r,l,pct:f/total*100,rpct:r/rT*100,lpct:l/l5T*100,dev,rd,ld,hot:rd*.5+dev*.3+ld*.2};
   }).sort((a,b)=>b.hot-a.hot);
 }
-
 function getStreaks(){
-  const current={},best={};
-  SYM.forEach(s=>{current[s.id]=0;best[s.id]=0;});
-  for(let i=hist.length-1;i>=0;i--){
-    const has=new Set(hist[i].d);
-    let anyBroke=false;
-    SYM.forEach(s=>{
-      if(!anyBroke||current[s.id]>0){
-        if(has.has(s.id)){current[s.id]++;if(current[s.id]>best[s.id])best[s.id]=current[s.id];}
-      }
-    });
-  }
-  // Recompute: current = consecutive rounds from latest where symbol appeared
-  const cur2={},cold={};
-  SYM.forEach(s=>{cur2[s.id]=0;cold[s.id]=0;});
+  const cur2={},cold={},bestEver={};
+  SYM.forEach(s=>{cur2[s.id]=0;cold[s.id]=0;bestEver[s.id]=0});
   for(let i=hist.length-1;i>=0;i--){
     const has=new Set(hist[i].d);
     SYM.forEach(s=>{
@@ -496,233 +574,281 @@ function getStreaks(){
       if(cold[s.id]!==-1){if(!has.has(s.id))cold[s.id]++;else cold[s.id]=-1;}
     });
   }
-  // Best streaks ever
-  const bestEver={};
-  SYM.forEach(s=>{
-    let streak=0,mx=0;
-    hist.forEach(h=>{if(h.d.includes(s.id)){streak++;if(streak>mx)mx=streak;}else streak=0;});
-    bestEver[s.id]=mx;
-  });
+  SYM.forEach(s=>{let st=0,mx=0;hist.forEach(h=>{if(h.d.includes(s.id)){st++;if(st>mx)mx=st}else st=0});bestEver[s.id]=mx});
   return{cur:cur2,cold,bestEver};
 }
-
-// ===== DYNAMIC TIPS =====
-function generateTips(){
-  const sc=getScores();
-  if(!sc)return[];
-  const{rounds}=analyze();
-  const streaks=getStreaks();
-  const tips=[];
-
-  // Hot symbol tip
-  const hottest=sc[0];
-  if(hottest.hot>0.3)
-    tips.push({icon:'🔥',text:`<strong>${hottest.n}</strong> is the hottest symbol — appeared ${hottest.rpct.toFixed(0)}% in the last 10 rounds (expected ~17%). Consider betting on it.`});
-
-  // Cold symbol warning
-  const coldest=sc[5];
-  if(coldest.hot<-0.3)
-    tips.push({icon:'🧊',text:`<strong>${coldest.n}</strong> is running cold at ${coldest.rpct.toFixed(0)}% recently. Avoid unless you see it starting to come back.`});
-
-  // Streak alerts
-  SYM.forEach(s=>{
-    if(streaks.cur[s.id]>=4)
-      tips.push({icon:'⚡',text:`<strong>${s.n}</strong> has appeared in ${streaks.cur[s.id]} consecutive rounds! Hot streak active.`});
-    if(streaks.cold[s.id]>=4)
-      tips.push({icon:'💤',text:`<strong>${s.n}</strong> hasn't appeared in ${streaks.cold[s.id]} straight rounds. Don't fall for the gambler's fallacy — a "due" symbol isn't more likely.`});
+function getDroughts(){
+  const d={};SYM.forEach(s=>d[s.id]=999);
+  for(let i=hist.length-1;i>=0;i--){
+    hist[i].d.forEach(sym=>{const ago=hist.length-1-i;if(ago<d[sym])d[sym]=ago});
+  }
+  SYM.forEach(s=>{if(d[s.id]===999)d[s.id]=hist.length});
+  return d;
+}
+function getPairs(){
+  const pairs={};
+  hist.forEach(h=>{
+    const u=[...new Set(h.d)].sort();
+    for(let i=0;i<u.length;i++)for(let j=i+1;j<u.length;j++){
+      const k=u[i]+'|'+u[j];pairs[k]=(pairs[k]||0)+1;
+    }
   });
-
-  // Data quality
-  if(rounds<10)
-    tips.push({icon:'📊',text:`You've logged <strong>${rounds}</strong> rounds. Aim for 20+ for reliable patterns. Small sample = noisy data.`});
-  else if(rounds>=20&&rounds<30)
-    tips.push({icon:'📊',text:`<strong>${rounds} rounds</strong> tracked. Your data is getting solid. Patterns are becoming reliable.`});
-  else if(rounds>=30)
-    tips.push({icon:'✅',text:`<strong>${rounds} rounds</strong> logged — strong sample size! Your recommendations are well-informed.`});
-
-  // Even spread warning
-  const spread=Math.abs(sc[0].hot-sc[5].hot);
-  if(spread<0.4)
-    tips.push({icon:'⚖️',text:'All symbols are showing fairly even frequencies. No strong edge right now — bet conservatively or wait.'});
-
-  // Bankroll tip
-  tips.push({icon:'💡',text:'If you\'re up from your starting bankroll, pocket your profits and only play with winnings. That way you can\'t lose money overall.'});
-
-  // Variance reminder
-  if(rounds>15)
-    tips.push({icon:'🎲',text:'Remember: fewer rounds with bigger bets gives you better odds than many small-bet rounds. The house edge adds up over time.'});
-
-  return tips;
+  return Object.entries(pairs).map(([k,v])=>{const[a,b]=k.split('|');return{a,b,count:v}}).sort((a,b)=>b.count-a.count);
 }
 
-function getLiveTip(){
-  const sc=getScores();
-  if(!sc)return'Log your first roll to start getting live advice.';
-  const hot=sc[0],cold=sc[5];
-  const{rounds}=analyze();
-  const streaks=getStreaks();
+// SESSION TIMER
+function timerStr(){
+  const s=Math.floor((Date.now()-sessionStart)/1000);
+  const m=Math.floor(s/60),h=Math.floor(m/60);
+  if(h>0)return h+'h '+((m%60)+'').padStart(2,'0')+'m';
+  return m+'m '+((s%60)+'').padStart(2,'0')+'s';
+}
 
-  const msgs=[];
-  if(hot.hot>0.5)msgs.push(`${hot.e} <strong>${hot.n}</strong> is on fire! Consider betting on it.`);
-  SYM.forEach(s=>{if(streaks.cur[s.id]>=3)msgs.push(`${MAP[s.id].e} ${s.n} hit ${streaks.cur[s.id]}x in a row!`);});
-  if(rounds<8)msgs.push(`Only ${rounds} rounds tracked. Log more for better advice.`);
-  if(msgs.length===0)msgs.push(`${hot.e} <strong>${hot.n}</strong> and ${sc[1].e} <strong>${sc[1].n}</strong> are your best bets right now.`);
+// TIPS
+function generateTips(){
+  const sc=getScores();if(!sc)return[];
+  const{rounds}=analyze();const streaks=getStreaks();const tips=[];
+  const hot=sc[0],cold=sc[5];
+  if(hot.hot>0.3)tips.push({i:'🔥',t:`<strong>${hot.n}</strong> is hot — ${hot.rpct.toFixed(0)}% in last 10 rounds (expected ~17%).`});
+  if(cold.hot<-0.3)tips.push({i:'🧊',t:`<strong>${cold.n}</strong> running cold at ${cold.rpct.toFixed(0)}%. Avoid for now.`});
+  SYM.forEach(s=>{if(streaks.cur[s.id]>=4)tips.push({i:'⚡',t:`<strong>${s.n}</strong> appeared ${streaks.cur[s.id]} rounds in a row!`});
+    if(streaks.cold[s.id]>=4)tips.push({i:'💤',t:`<strong>${s.n}</strong> absent for ${streaks.cold[s.id]} rounds. Don't fall for gambler's fallacy.`});});
+  if(rounds<10)tips.push({i:'📊',t:`Only <strong>${rounds}</strong> rounds tracked. Aim for 20+ for reliable data.`});
+  else if(rounds>=30)tips.push({i:'✅',t:`<strong>${rounds} rounds</strong> — strong data. Recommendations are well-informed.`});
+  const spread=Math.abs(sc[0].hot-sc[5].hot);
+  if(spread<0.4)tips.push({i:'⚖️',t:'Frequencies are even. No strong edge — bet conservatively.'});
+  tips.push({i:'💡',t:"If you're up, pocket profits and play with house money only."});
+  if(rounds>15)tips.push({i:'🎲',t:'Fewer rounds with bigger bets beats many small bets. House edge compounds.'});
+  if(sessionPnl>0)tips.push({i:'🤑',t:`You're up <strong>$${sessionPnl.toFixed(0)}</strong> this session! Consider walking away with profit.`});
+  if(sessionPnl<-100)tips.push({i:'⚠️',t:`Down <strong>$${Math.abs(sessionPnl).toFixed(0)}</strong>. Consider taking a break or reducing bet size.`});
+  return tips;
+}
+function getLiveTip(){
+  const sc=getScores();if(!sc)return'Log rolls to get live tips.';
+  const msgs=[];const streaks=getStreaks();
+  if(sc[0].hot>0.5)msgs.push(`${sc[0].e} <strong>${sc[0].n}</strong> is on fire! Bet on it.`);
+  SYM.forEach(s=>{if(streaks.cur[s.id]>=3)msgs.push(`${MAP[s.id].e} ${s.n} hit ${streaks.cur[s.id]}x in a row!`)});
+  if(hist.length<8)msgs.push('Log more rounds for better predictions.');
+  if(!msgs.length)msgs.push(`Best bets: ${sc[0].e} <strong>${sc[0].n}</strong> and ${sc[1].e} <strong>${sc[1].n}</strong>`);
   return msgs[Math.floor(Math.random()*msgs.length)];
 }
 
-// ===== UPDATE REC =====
+// UPDATE REC
 function updateRec(){
-  const sc=getScores();
-  const topEl=document.getElementById('topRec');
-  const heroEl=document.getElementById('recHero');
+  const sc=getScores();const topEl=document.getElementById('topRec');const heroEl=document.getElementById('recHero');
   const bank=parseInt(document.getElementById('bankrollIn').value)||0;
-
+  document.getElementById('undoBtn').style.display=hist.length?'':'none';
+  document.getElementById('repeatBtn').style.display=hist.length?'':'none';
+  document.getElementById('liveTipText').innerHTML=getLiveTip();
+  // P&L
+  const pnlEl=document.getElementById('pnlVal');
+  pnlEl.textContent=(sessionPnl>=0?'+':'')+' $'+Math.abs(sessionPnl).toFixed(0);
+  pnlEl.className='pnl-val '+(sessionPnl>=0?'pos':'neg');
+  // Last 5 strip
+  const l5=document.getElementById('last5');
+  if(hist.length>0){
+    l5.innerHTML=hist.slice(-5).map(h=>`<div class="l5"><span class="l5n">#${h.r}</span>${h.d.map(d=>MAP[d].e).join('')}</div>`).join('');
+  }else l5.innerHTML='';
   // Sizing
   if(bank>0){
     const c=Math.max(1,Math.floor(bank*.02)),m=Math.max(1,Math.floor(bank*.05)),a=Math.max(1,Math.floor(bank*.1));
-    document.getElementById('sizePills').innerHTML=`
-      <div class="spill"><div class="sa">$${c}</div><div class="sl">Safe 2%</div></div>
-      <div class="spill"><div class="sa">$${m}</div><div class="sl">Med 5%</div></div>
-      <div class="spill"><div class="sa">$${a}</div><div class="sl">Bold 10%</div></div>`;
+    document.getElementById('sizePills').innerHTML=`<div class="spi"><div class="sa">$${c}</div><div class="sl">Safe 2%</div></div><div class="spi"><div class="sa">$${m}</div><div class="sl">Med 5%</div></div><div class="spi"><div class="sa">$${a}</div><div class="sl">Bold 10%</div></div>`;
   }
-
-  // Undo / repeat buttons
-  document.getElementById('undoBtn').style.display=hist.length?'':'none';
-  document.getElementById('repeatBtn').style.display=hist.length?'':'none';
-
-  // Live tip
-  document.getElementById('liveTipText').innerHTML=getLiveTip();
-
-  if(!sc){
-    topEl.innerHTML=`<span style="color:var(--dim)">Log ${Math.max(0,2-hist.length)} more rounds for advice</span>`;
-    heroEl.innerHTML='<div class="empty">Log at least 2 rounds to see recommendations.</div>';
-    return;
-  }
-
+  if(!sc){topEl.innerHTML=`<span style="color:var(--dim)">Log more rounds for advice</span>`;heroEl.innerHTML='<div class="empty">Log at least 2 rounds.</div>';return;}
   const top2=sc.slice(0,2);
   const conf=Math.min(100,Math.round((hist.length/30)*50+Math.abs(sc[0].hot-sc[5].hot)*10));
-
-  topEl.innerHTML=`
-    <div style="font-size:.65rem;color:var(--dim);margin-bottom:2px">BET ON:</div>
-    <div class="picks">
-      <span class="chip"><span class="ce">${top2[0].e}</span> ${top2[0].n}</span>
-      <span class="chip s2"><span class="ce">${top2[1].e}</span> ${top2[1].n}</span>
-    </div>
-    <div class="sub">${conf}% confidence · ${hist.length} rounds</div>`;
-
-  heroEl.innerHTML=`
-    <div class="rh">Recommended Bets</div>
-    <div class="bp">
-      <div class="pcard"><span class="pe">${top2[0].e}</span><div class="pn">${top2[0].n}</div><span class="pb b1">#1 PICK · ${top2[0].rpct.toFixed(0)}% recent</span></div>
-      <div class="pcard p2"><span class="pe">${top2[1].e}</span><div class="pn">${top2[1].n}</div><span class="pb b2">#2 PICK · ${top2[1].rpct.toFixed(0)}% recent</span></div>
-    </div>
+  topEl.innerHTML=`<div style="font-size:.6rem;color:var(--dim);margin-bottom:1px">BET ON:</div>
+    <div class="picks"><span class="chip"><span class="ce">${top2[0].e}</span>${top2[0].n}</span><span class="chip s2"><span class="ce">${top2[1].e}</span>${top2[1].n}</span></div>
+    <div class="sub">${conf}% · ${hist.length}rds · ${timerStr()}</div>`;
+  heroEl.innerHTML=`<div class="rh">Recommended Bets</div>
+    <div class="bp"><div class="pc"><span class="pe">${top2[0].e}</span><div class="pn">${top2[0].n}</div><span class="pb b1">#1 · ${top2[0].rpct.toFixed(0)}%</span></div>
+    <div class="pc p2"><span class="pe">${top2[1].e}</span><div class="pn">${top2[1].n}</div><span class="pb b2">#2 · ${top2[1].rpct.toFixed(0)}%</span></div></div>
     <div class="cbar"><div class="cl">Confidence: ${conf}% · ${hist.length} rounds</div><div class="ct"><div class="cf" style="width:${conf}%"></div></div></div>
-    <div class="rnote">${top2[0].n} at ${top2[0].rpct.toFixed(0)}% recently (expected 17%). ${top2[0].hot>0.5?'Running HOT!':'Slight edge.'} More rounds = better accuracy.</div>`;
-
+    <div class="rnote">${top2[0].n} at ${top2[0].rpct.toFixed(0)}% recently. ${top2[0].hot>0.5?'Running HOT!':'Slight edge.'}</div>`;
+  // Prediction accuracy
+  if(predictionHits.total>0){
+    document.getElementById('predCard').style.display='';
+    const pct=Math.round(predictionHits.hits/predictionHits.total*100);
+    document.getElementById('predVal').textContent=pct+'%';
+    document.getElementById('predVal').style.color=pct>=50?'var(--green)':'var(--accent2)';
+  }
   // Trends
   const{freq,total,rounds}=analyze();
   if(rounds>=5){
     document.getElementById('trendCard').style.display='';
     const rT=Math.min(rounds,10)*3;
     document.getElementById('trendGrid').innerHTML=SYM.map(s=>{
-      const overall=freq[s.id]/total*100;
-      const rec=sc.find(x=>x.id===s.id).rpct;
-      const diff=rec-overall;
-      const arrow=diff>3?'↑':diff<-3?'↓':'→';
-      const cls=diff>3?'up':diff<-3?'down':'flat';
-      return`<div class="tcard"><div class="te">${s.e}</div><div class="tarrow ${cls}">${arrow}</div><div class="tpct">${rec.toFixed(0)}% recent</div></div>`;
+      const ov=freq[s.id]/total*100,rec=sc.find(x=>x.id===s.id).rpct,diff=rec-ov;
+      const ar=diff>3?'↑':diff<-3?'↓':'→',cl=diff>3?'up':diff<-3?'dn':'fl';
+      return`<div class="tc"><div class="te">${s.e}</div><div class="ta ${cl}">${ar}</div><div class="tp">${rec.toFixed(0)}%</div></div>`;
     }).join('');
   }
-
-  // Streaks
-  const streaks=getStreaks();
-  const activeBadges=[];
-  SYM.forEach(s=>{
-    if(streaks.cur[s.id]>=3)activeBadges.push(`<span class="streak-badge hot">${s.e} ${streaks.cur[s.id]}x hot</span>`);
-    if(streaks.cold[s.id]>=3)activeBadges.push(`<span class="streak-badge cold">${s.e} ${streaks.cold[s.id]}x cold</span>`);
-  });
-  if(activeBadges.length){
-    document.getElementById('streakCard').style.display='';
-    document.getElementById('streakRow').innerHTML=activeBadges.join('');
-  } else {
-    document.getElementById('streakCard').style.display='none';
+  // Droughts
+  if(rounds>=3){
+    document.getElementById('droughtCard').style.display='';
+    const dr=getDroughts();
+    document.getElementById('droughtGrid').innerHTML=SYM.map(s=>{
+      const v=dr[s.id];const cl=v===0?'fresh':v>=3?'stale':'';
+      return`<div class="dg-item"><div class="de">${s.e}</div><div class="dv ${cl}">${v===0?'NOW':v+'rd'+(v>1?'s':'')}</div><div class="dl2">ago</div></div>`;
+    }).join('');
   }
-
-  // Dynamic advice tips
+  // Streaks
+  const streaks=getStreaks();const badges=[];
+  SYM.forEach(s=>{if(streaks.cur[s.id]>=2)badges.push(`<span class="skb hot">${s.e} ${streaks.cur[s.id]}x hot</span>`);
+    if(streaks.cold[s.id]>=3)badges.push(`<span class="skb cold">${s.e} ${Math.abs(streaks.cold[s.id])}x cold</span>`);});
+  if(badges.length){document.getElementById('streakCard').style.display='';document.getElementById('streakRow').innerHTML=badges.join('');}
+  else document.getElementById('streakCard').style.display='none';
+  // Tips
   const tips=generateTips();
-  document.getElementById('adviceTips').innerHTML=tips.slice(0,5).map(t=>`
-    <div class="atip"><span class="aticon">${t.icon}</span><div class="attext">${t.text}</div></div>`).join('');
+  document.getElementById('adviceTips').innerHTML=tips.slice(0,6).map(t=>`<div class="atip"><span class="ati">${t.i}</span><div class="att">${t.t}</div></div>`).join('');
+  // Picker hit counts
+  renderPicker();
 }
 
-// ===== RANKS =====
+// RANKS
 function renderRanks(){
-  const area=document.getElementById('rankArea');
-  const{freq,total}=analyze();
-  if(!total){area.innerHTML='<div class="empty">No data.</div>';return;}
-  const exp=100/6;
-  const items=SYM.map(s=>({...s,c:freq[s.id],p:freq[s.id]/total*100})).sort((a,b)=>b.p-a.p);
+  const area=document.getElementById('rankArea');const{freq,total}=analyze();
+  if(!total){area.innerHTML='<div class="empty">No data.</div>';return}
+  const exp=100/6;const items=SYM.map(s=>({...s,c:freq[s.id],p:freq[s.id]/total*100})).sort((a,b)=>b.p-a.p);
   const mx=Math.max(...items.map(i=>i.p),exp+5);
-  area.innerHTML=items.map(s=>{
-    const d=s.p-exp,cls=d>2?'hot':d<-2?'cold':'mid',clr=cls==='hot'?'var(--green)':cls==='cold'?'var(--accent2)':'var(--dim)';
-    return`<div class="rrow"><span class="re">${s.e}</span><div class="rbg"><div class="rf ${cls}" style="width:${(s.p/mx)*100}%">${s.c}x</div></div><span class="rp" style="color:${clr}">${s.p.toFixed(1)}%</span></div>`;
+  area.innerHTML=items.map(s=>{const d=s.p-exp,cl=d>2?'hot':d<-2?'cold':'mid',clr=cl==='hot'?'var(--green)':cl==='cold'?'var(--accent2)':'var(--dim)';
+    return`<div class="rrow"><span class="re">${s.e}</span><div class="rbg"><div class="rf ${cl}" style="width:${(s.p/mx)*100}%">${s.c}x</div></div><span class="rp" style="color:${clr}">${s.p.toFixed(1)}%</span></div>`;
   }).join('');
 }
 
-// ===== STATS =====
+// STATS
 function renderStats(){
   const{freq,total,rounds}=analyze();
-  document.getElementById('qR').textContent=rounds;
-  document.getElementById('qD').textContent=total;
+  document.getElementById('qR').textContent=rounds;document.getElementById('qD').textContent=total;
+  const pnlEl=document.getElementById('qP');
+  pnlEl.textContent=(sessionPnl>=0?'+$':'-$')+Math.abs(sessionPnl).toFixed(0);
+  pnlEl.style.color=sessionPnl>=0?'var(--green)':'var(--accent2)';
   if(total>0){
     const sorted=SYM.slice().sort((a,b)=>freq[b.id]-freq[a.id]);
     document.getElementById('qH').textContent=sorted[0].e;
     document.getElementById('qC').textContent=sorted[5].e;
-    const streaks=getStreaks();
-    let bestSym=null,bestLen=0,worstSym=null,worstLen=0;
-    SYM.forEach(s=>{
-      if(streaks.bestEver[s.id]>bestLen){bestLen=streaks.bestEver[s.id];bestSym=s;}
-      if(streaks.cold[s.id]>worstLen){worstLen=Math.abs(streaks.cold[s.id]);worstSym=s;}
-    });
-    document.getElementById('qB').textContent=bestSym?bestSym.e+' ×'+bestLen:'--';
-    document.getElementById('qW').textContent=worstSym&&worstLen>0?worstSym.e+' ×'+worstLen:'--';
-  } else {
-    document.getElementById('qH').textContent='--';
-    document.getElementById('qC').textContent='--';
-    document.getElementById('qB').textContent='--';
-    document.getElementById('qW').textContent='--';
+    const streaks=getStreaks();let bs=null,bl=0;
+    SYM.forEach(s=>{if(streaks.bestEver[s.id]>bl){bl=streaks.bestEver[s.id];bs=s}});
+    document.getElementById('qB').textContent=bs?bs.e+'×'+bl:'--';
   }
 }
 
-// ===== TABLE =====
+// TABLE
 function renderTable(){
-  const area=document.getElementById('tableArea');
-  const{freq,recent,total,rounds}=analyze();
-  if(!total){area.innerHTML='<div class="empty">No data.</div>';return;}
+  const area=document.getElementById('tableArea');const{freq,recent,total,rounds}=analyze();
+  if(!total){area.innerHTML='<div class="empty">No data.</div>';return}
   const rT=Math.min(rounds,10)*3;
-  area.innerHTML=`<table class="dtable">
-    <tr><th style="text-align:left">Symbol</th><th>Hits</th><th>%</th><th>Last 10</th><th>vs Exp</th></tr>
-    ${SYM.map(s=>{
-      const f=freq[s.id],r=recent[s.id],p=f/total*100,rp=rT?r/rT*100:0,d=p-100/6;
-      const c=d>2?'hot':d<-2?'cold':'';
-      return`<tr><td>${s.e} ${s.n}</td><td>${f}</td><td class="${c}">${p.toFixed(1)}%</td><td>${rp.toFixed(1)}%</td><td class="${c}">${d>=0?'+':''}${d.toFixed(1)}%</td></tr>`;
-    }).join('')}</table>`;
+  area.innerHTML=`<table class="dtable"><tr><th style="text-align:left">Sym</th><th>Hits</th><th>%</th><th>Last10</th><th>vs Exp</th></tr>
+    ${SYM.map(s=>{const f=freq[s.id],r=recent[s.id],p=f/total*100,rp=rT?r/rT*100:0,d=p-100/6;const c=d>2?'hot':d<-2?'cold':'';
+      return`<tr><td>${s.e}${s.n}</td><td>${f}</td><td class="${c}">${p.toFixed(1)}%</td><td>${rp.toFixed(1)}%</td><td class="${c}">${d>=0?'+':''}${d.toFixed(1)}%</td></tr>`;}).join('')}</table>`;
 }
 
-// ===== HISTORY =====
+// DONUT CHART
+function renderDonut(){
+  const canvas=document.getElementById('donutCanvas');const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;canvas.width=240*dpr;canvas.height=240*dpr;
+  canvas.style.width='120px';canvas.style.height='120px';ctx.scale(dpr,dpr);
+  const{freq,total}=analyze();if(!total)return;
+  const cx=120,cy=120,r=90,r2=55;
+  let angle=-Math.PI/2;
+  SYM.forEach(s=>{
+    const slice=(freq[s.id]/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+slice);ctx.closePath();
+    ctx.fillStyle=s.clr;ctx.fill();angle+=slice;
+  });
+  ctx.beginPath();ctx.arc(cx,cy,r2,0,Math.PI*2);ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--card').trim();ctx.fill();
+  ctx.fillStyle='#f1f3f5';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText(total/3+' rds',cx,cy+5);
+
+  const legend=document.getElementById('donutLegend');
+  legend.innerHTML=SYM.map(s=>`<div class="dl-item"><span class="dl-dot" style="background:${s.clr}"></span>${s.e} ${(freq[s.id]/total*100).toFixed(1)}%</div>`).join('');
+}
+
+// PAIRS
+function renderPairs(){
+  const pairs=getPairs();if(!pairs.length){document.getElementById('pairCard').style.display='none';return}
+  document.getElementById('pairCard').style.display='';
+  const mx=pairs[0].count;
+  document.getElementById('pairList').innerHTML=pairs.slice(0,6).map(p=>
+    `<div class="pair-row"><span class="pemoji">${MAP[p.a].e}${MAP[p.b].e}</span><div class="pbar"><div class="pfill" style="width:${(p.count/mx)*100}%"></div></div><span class="pval">${p.count}x</span></div>`
+  ).join('');
+}
+
+// HEATMAP
+function renderHeatmap(){
+  if(hist.length<3){document.getElementById('heatCard').style.display='none';return}
+  document.getElementById('heatCard').style.display='';
+  const last=hist.slice(-20);
+  let html='<table class="hm-table"><tr><th></th>';
+  last.forEach(h=>{html+=`<td class="hm-head">${h.r}</td>`});
+  html+='</tr>';
+  SYM.forEach(s=>{
+    html+=`<tr><th>${s.e}</th>`;
+    last.forEach(h=>{
+      const hit=h.d.includes(s.id);
+      html+=`<td><span class="hm-cell ${hit?'hit':'miss'}">${hit?s.e:'·'}</span></td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</table>';
+  document.getElementById('heatmap').innerHTML=html;
+}
+
+// PROB CALCULATOR
+function renderProb(){
+  document.getElementById('probGrid').innerHTML=`
+    <div class="prob-item"><div class="prob-label">Any symbol 0 matches</div><div class="prob-val">57.9%</div></div>
+    <div class="prob-item"><div class="prob-label">Any symbol 1 match</div><div class="prob-val">34.7%</div></div>
+    <div class="prob-item"><div class="prob-label">Any symbol 2 matches</div><div class="prob-val">6.9%</div></div>
+    <div class="prob-item"><div class="prob-label">Any symbol 3 matches</div><div class="prob-val">0.46%</div></div>
+    <div class="prob-item"><div class="prob-label">Triple (any symbol)</div><div class="prob-val">2.8%</div></div>
+    <div class="prob-item"><div class="prob-label">All 3 different</div><div class="prob-val">55.6%</div></div>
+    <div class="prob-item"><div class="prob-label">At least one pair</div><div class="prob-val">44.4%</div></div>
+    <div class="prob-item"><div class="prob-label">House edge per bet</div><div class="prob-val">-7.87%</div></div>`;
+}
+
+// BANKROLL CHART
+function renderBnkChart(){
+  if(bankrollHist.length<2){document.getElementById('chartCard').style.display='none';return}
+  document.getElementById('chartCard').style.display='';
+  const canvas=document.getElementById('bnkChart');const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;const W=canvas.parentElement.clientWidth;const H=140;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  const data=bankrollHist,mn=Math.min(...data)*.9,mx=Math.max(...data)*1.1||2000;
+  const pad={t:10,r:10,b:20,l:40},gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+  for(let i=0;i<=3;i++){const y=pad.t+(gH/3)*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#868e96';ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.fillText('$'+Math.round(mx-(mx-mn)*(i/3)),pad.l-4,y+3);}
+  ctx.beginPath();data.forEach((v,i)=>{const x=pad.l+(i/(data.length-1))*gW,y=pad.t+gH*(1-(v-mn)/(mx-mn));
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+  ctx.strokeStyle=sessionPnl>=0?'var(--green)':'var(--accent2)';ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
+  const lastX=pad.l+gW;ctx.lineTo(lastX,pad.t+gH);ctx.lineTo(pad.l,pad.t+gH);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+gH);
+  grad.addColorStop(0,sessionPnl>=0?'rgba(81,207,102,.15)':'rgba(255,107,107,.15)');grad.addColorStop(1,'transparent');
+  ctx.fillStyle=grad;ctx.fill();
+}
+
+// HISTORY
 function renderHist(){
   const el=document.getElementById('histList'),cr=document.getElementById('clrRow');
-  if(!hist.length){el.innerHTML='<div class="empty">No rolls logged yet.</div>';cr.style.display='none';return;}
+  if(!hist.length){el.innerHTML='<div class="empty">No rolls logged yet.</div>';cr.style.display='none';return}
   cr.style.display='';
-  el.innerHTML=[...hist].reverse().map((h,ri)=>{
-    const idx=hist.length-1-ri;
+  el.innerHTML=[...hist].reverse().map((h,ri)=>{const idx=hist.length-1-ri;
     return`<div class="hrow"><span class="hn">#${h.r}</span><span class="hd">${h.d.map(d=>MAP[d].e).join('')}</span><button class="hdel" onclick="delRoll(${idx})">X</button></div>`;
   }).join('');
 }
 
-// ===== REFRESH =====
-function refreshAll(){updateRec();renderRanks();renderStats();renderTable();renderHist();}
+// REFRESH
+function refreshAll(){updateRec();renderRanks();renderStats();renderTable();renderDonut();renderPairs();renderHeatmap();renderProb();renderBnkChart();renderHist();}
 
-// ===== INIT =====
+// TIMER UPDATE
+setInterval(()=>{const sc=getScores();if(sc){
+  const top2=sc.slice(0,2);const conf=Math.min(100,Math.round((hist.length/30)*50+Math.abs(sc[0].hot-sc[5].hot)*10));
+  const sub=document.querySelector('.tr .sub');if(sub)sub.textContent=conf+'% · '+hist.length+'rds · '+timerStr();
+}},10000);
+
+// INIT
 renderPicker();syncUI();refreshAll();
 </script>
 </body>
